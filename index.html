@@ -483,7 +483,7 @@
         // CONFIGURACIÓN DE API GEMINI (IA REAL)
         // ==========================================
         // ⚠️ PEGA AQUÍ TU API KEY REAL DE GOOGLE AI STUDIO
-        const GEMINI_API_KEY = "AQ.Ab8RN6Ia_xePSY4OL717fNwlV348I9KBoP2bfMO1gXkv24vrow"; 
+     
         let modelosDisponiblesCache = [];
 
         // ==========================================
@@ -829,27 +829,37 @@
             return msgId;
         }
 
-        async function obtenerModelosActivos() {
-            if (modelosDisponiblesCache.length > 0) return modelosDisponiblesCache;
+        async function consultarGeminiAutomatico(mensajeUsuario) {
+  const payload = {
+    contents: [{
+      role: "user",
+      parts: [{ text: mensajeUsuario }]
+    }],
+    systemInstruction: {
+      parts: [{
+        text: "Eres un asistente virtual institucional de apoyo y bienestar emocional para estudiantes. Responde de forma empática, cálida, respetuosa, clara y completa en español. No diagnostiques trastornos clínicos ni recetes medicamentos; ofrece orientación práctica, escucha activa y técnicas de manejo emocional."
+      }]
+    },
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 450
+    }
+  };
 
-            const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`);
-            const data = await resp.json();
+  const resp = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
 
-            if (!resp.ok) throw new Error("API Key inválida.");
+  const data = await resp.json();
 
-            const validos = (data.models || [])
-                .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
-                .map(m => m.name);
+  if (!resp.ok) {
+    throw new Error(data.error || 'Error en el servidor');
+  }
 
-            validos.sort((a, b) => {
-                const score = name => name.includes('lite') ? 1 : (name.includes('flash') ? 2 : 3);
-                return score(a) - score(b);
-            });
-
-            if (validos.length === 0) throw new Error("Sin modelos habilitados.");
-            modelosDisponiblesCache = validos;
-            return validos;
-        }
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || "Orientación de bienestar: Es completamente comprensible que te sientas así. Respira hondo y recuerda que tu bienestar es muy importante. ¿Cómo te sientes ahora?";
+}
 
         async function consultarGeminiAutomatico(mensajeUsuario) {
             if (GEMINI_API_KEY === "AIzaSyTU_CLAVE_REAL_AQUI" || !GEMINI_API_KEY) {
