@@ -861,35 +861,6 @@
   return data.candidates?.[0]?.content?.parts?.[0]?.text || "Orientación de bienestar: Es completamente comprensible que te sientas así. Respira hondo y recuerda que tu bienestar es muy importante. ¿Cómo te sientes ahora?";
 }
 
-        async function consultarGeminiAutomatico(mensajeUsuario) {
-            if (GEMINI_API_KEY === "AIzaSyTU_CLAVE_REAL_AQUI" || !GEMINI_API_KEY) {
-                throw new Error("Falta API Key.");
-            }
-
-            const modelos = await obtenerModelosActivos();
-            const promptSistema = "Eres un asistente virtual de bienestar emocional institucional para estudiantes. Responde de forma empática, cálida y completa, explicando con claridad (máximo 3 o 4 frases bien desarrolladas sin cortar las oraciones). Dirígete al estudiante de forma general.";
-
-            const cuerpoPeticion = {
-                contents: [{ parts: [{ text: promptSistema + "\n\nEstudiante: " + mensajeUsuario }] }],
-                generationConfig: { maxOutputTokens: 300, temperature: 0.7 } // Límite ampliado para evitar cortes
-            };
-
-            for (const nombreModelo of modelos) {
-                try {
-                    const url = `https://generativelanguage.googleapis.com/v1beta/${nombreModelo}:generateContent?key=${GEMINI_API_KEY}`;
-                    const respuesta = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(cuerpoPeticion)
-                    });
-                    const datos = await respuesta.json();
-                    if (respuesta.ok && datos.candidates && datos.candidates[0]?.content?.parts?.[0]?.text) {
-                        return datos.candidates[0].content.parts[0].text;
-                    }
-                } catch (err) {}
-            }
-            throw new Error("Saturación temporal.");
-        }
     </script>
 </body>
 </html>
