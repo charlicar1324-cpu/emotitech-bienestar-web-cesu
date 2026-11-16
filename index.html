@@ -830,19 +830,19 @@
         }
 
         async function consultarGeminiAutomatico(mensajeUsuario) {
-  const payload = {
+ const payload = {
     contents: [{
       role: "user",
       parts: [{ text: mensajeUsuario }]
     }],
     systemInstruction: {
       parts: [{
-        text: "Eres un asistente virtual institucional de apoyo y bienestar emocional para estudiantes. Responde de forma empática, cálida, respetuosa, clara y completa en español. No diagnostiques trastornos clínicos ni recetes medicamentos; ofrece orientación práctica, escucha activa y técnicas de manejo emocional."
+        text: "Eres un asistente virtual institucional de apoyo y bienestar emocional para estudiantes. Responde de forma empática, cálida, respetuosa y completa en español, cerrando siempre tus ideas sin dejar oraciones inconclusas. No uses asteriscos ni formato Markdown (escribe en texto plano limpio). No diagnostiques trastornos clínicos ni recetes medicamentos; ofrece orientación práctica, escucha activa y técnicas de manejo emocional en 1 o 2 párrafos breves."
       }]
     },
     generationConfig: {
       temperature: 0.7,
-      maxOutputTokens: 450
+      maxOutputTokens: 1500
     }
   };
 
