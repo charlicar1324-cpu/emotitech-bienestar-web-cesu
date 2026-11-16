@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Bienestar Emocional - EmotiTech</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f6f7;
+            --card-bg: #ffffff;
+            --border-color: #cccccc;
+            --success-color: #27ae60;
+            --warning-color: #e67e22;
+            --danger-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .role-selector label { font-weight: bold; margin-right: 10px; }
+        .role-selector select { padding: 8px 12px; border-radius: 5px; border: none; font-size: 14px; cursor: pointer; }
+
+        .container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .role-section { display: none; }
+        .role-section.active { display: block; }
+
+        h2 { border-bottom: 2px solid var(--primary-color); padding-bottom: 8px; margin-top: 0; }
+        h3 { margin-top: 0; font-size: 16px; color: var(--primary-color); }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+
+        .panel-box {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #fafafa;
+            margin-bottom: 15px;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+        }
+        .metric-card h4 { margin: 0 0 5px 0; font-size: 13px; color: #666; }
+        .metric-card .value { font-size: 18px; font-weight: bold; color: var(--primary-color); }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn-sm { padding: 4px 8px; font-size: 11px; }
+        .btn-success { background-color: var(--success-color); }
+        .btn-warning { background-color: var(--warning-color); }
+        .btn-danger { background-color: var(--danger-color); }
+
+        .chat-box {
+            height: 250px;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg { 
+            padding: 10px 14px; 
+            border-radius: 12px; 
+            max-width: 85%; 
+            font-size: 13px; 
+            line-height: 1.5; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
+            white-space: pre-wrap; 
+        }
+        .msg-bot { background-color: #e8f4f8; color: #2c3e50; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg-user { background-color: var(--accent-color); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .quick-btn {
+            background-color: #ebf5fb;
+            color: var(--primary-color);
+            border: 1px solid var(--accent-color);
+            border-radius: 15px;
+            padding: 5px 10px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .quick-btn:hover { background-color: var(--accent-color); color: white; }
+
+        .chat-input-group { display: flex; gap: 8px; }
+        .chat-input-group input { flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; }
+        
+        .mood-selector { display: flex; justify-content: space-around; margin: 12px 0; }
+        .mood-btn { background: white; border: 2px solid var(--border-color); border-radius: 50%; width: 48px; height: 48px; font-size: 22px; cursor: pointer; }
+        .mood-btn.selected { border-color: var(--accent-color); transform: scale(1.1); background-color: #ebf5fb; }
+        
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
+        .form-group select, .form-group input { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 13px; }
+        
+        .test-question { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; background: white; }
+        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: left; }
+        th { background-color: #eaecee; }
+
+        .login-box {
+            max-width: 380px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: #fafafa;
+        }
+        .badge { padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; }
+        .badge-ok { background-color: var(--success-color); }
+        .badge-warn { background-color: var(--warning-color); }
+        .badge-off { background-color: #7f8c8d; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1 style="margin: 0; font-size: 20px;">Sistema de Bienestar Emocional</h1>
+            <small>EmotiTech Solutions | Plataforma Institucional de Apoyo</small>
+        </div>
+        <div class="role-selector">
+            <label for="roleSelect">Módulo / Rol:</label>
+            <select id="roleSelect" onchange="cambiarRol()">
+                <option value="estudiante">A) Estudiante</option>
+                <option value="docente">B) Docente</option>
+                <option value="tutor">C) Tutor o Padre de Familia</option>
+                <option value="admin">D) Administrador</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- ========================================================= -->
+        <!-- A) MÓDULO ESTUDIANTE                                      -->
+        <!-- ========================================================= -->
+        <div id="sec-estudiante" class="role-section active">
+            <h2>A) Módulo Estudiante</h2>
+            <div class="grid-2">
+                <div>
+                    <!-- a) Acceder al chatbot / c) Interactuar mediante mensajes o respuestas predeterminadas -->
+                    <div class="panel-box">
+                        <h3>Chatbot de Bienestar Emocional</h3>
+                        <div id="chatHistory" class="chat-box">
+                            <div class="msg msg-bot">¡Hola! Soy tu asistente virtual de bienestar. Puedes escribir cómo te sientes o elegir una opción rápida abajo.</div>
+                        </div>
+                        
+                        <!-- Respuestas predeterminadas dinámicas (gestionadas por el Admin) -->
+                        <div style="font-size: 11px; color: #666; margin-bottom: 4px;">Respuestas rápidas predeterminadas:</div>
+                        <div id="quickRepliesContainer" class="quick-replies"></div>
+
+                        <div class="chat-input-group">
+                            <input type="text" id="userInput" placeholder="Escribe tu mensaje..." onkeypress="if(event.key==='Enter') enviarMensaje()">
+                            <button class="btn" onclick="enviarMensaje()">Enviar</button>
+                        </div>
+                    </div>
+
+                    <!-- b) Registrar su estado de ánimo -->
+                    <div class="panel-box">
+                        <h3>Registro Diario de Estado de Ánimo</h3>
+                        <div class="mood-selector">
+                            <button class="mood-btn" onclick="seleccionarAnimo('🙁 Triste / Mal', this)">🙁</button>
+                            <button class="mood-btn" onclick="seleccionarAnimo('😐 Neutral', this)">😐</button>
+                            <button class="mood-btn" onclick="seleccionarAnimo('🙂 Feliz / Bien', this)">🙂</button>
+                        </div>
+                        <div class="form-group">
+                            <label>Factor asociado:</label>
+                            <select id="factorSelect">
+                                <option value="Escolar / Académico">Escolar / Académico</option>
+                                <option value="Personal / Familiar">Personal / Familiar</option>
+                                <option value="Salud / Cansancio">Salud / Cansancio</option>
+                            </select>
+                        </div>
+                        <button class="btn" style="width: 100%;" onclick="guardarRegistroAnimo()">Registrar Estado de Ánimo</button>
+                    </div>
+                </div>
+
+                <div>
+                    <!-- d) Realizar test de evaluación emocional -->
+                    <div class="panel-box">
+                        <h3>Test de Evaluación Emocional</h3>
+                        <p style="font-size: 12px; color: #666;">Responde el cuestionario institucional para evaluar tu bienestar actual.</p>
+                        
+                        <div id="contenedorPreguntasTest">
+                            <!-- Se carga dinámicamente para que el Admin pueda editarlo -->
+                        </div>
+
+                        <button class="btn" style="width: 100%; margin-top: 8px;" onclick="enviarTestAlChat()">Evaluar Test y Obtener Orientación</button>
+                    </div>
+
+                    <!-- f) Consultar su historial de estados de ánimo -->
+                    <div class="panel-box">
+                        <h3>Historial de Estados de Ánimo</h3>
+                        <div style="max-height: 150px; overflow-y: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Estado de Ánimo</th>
+                                        <th>Factor</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaHistorialEstudiante"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- B) MÓDULO DOCENTE                                         -->
+        <!-- ========================================================= -->
+        <div id="sec-docente" class="role-section">
+            <h2>B) Módulo Docente</h2>
+            
+            <!-- h) Acceder al sistema mediante sus credenciales -->
+            <div id="loginDocente" class="login-box">
+                <h3>Acceso Institucional Docente</h3>
+                <p style="font-size: 12px; color: #666;">Ingresa tus credenciales para consultar el seguimiento emocional autorizado.</p>
+                <div class="form-group">
+                    <label>Usuario / Correo Institucional:</label>
+                    <input type="text" id="docUser" value="docente@institucion.edu">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <input type="password" id="docPass" value="123456">
+                </div>
+                <button class="btn" style="width: 100%;" onclick="iniciarSesion('Docente')">Iniciar Sesión</button>
+            </div>
+
+            <div id="panelDocente" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span style="font-size: 13px; color: var(--success-color); font-weight: bold;">● Sesión Docente Activa (Permisos de seguimiento habilitados)</span>
+                    <button class="btn btn-sm btn-danger" onclick="cerrarSesion('Docente')">Cerrar Sesión</button>
+                </div>
+
+                <!-- l) Visualizar reportes de seguimiento -->
+                <div class="grid-3">
+                    <div class="metric-card">
+                        <h4>Estudiantes Autorizados</h4>
+                        <div class="value" id="docTotalAlumnos">2</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Registros de Ánimo</h4>
+                        <div class="value" id="docTotalRegistros">2</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Índice General de Bienestar</h4>
+                        <div class="value" style="color: var(--success-color);">Estable</div>
+                    </div>
+                </div>
+
+                <!-- i) Consultar información general del seguimiento / j) Consultar registros de estado de ánimo -->
+                <div class="panel-box">
+                    <h3>Seguimiento Emocional y Registros de Ánimo (Estudiantes Autorizados)</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Matrícula</th>
+                                <th>Estudiante</th>
+                                <th>Último Ánimo Registrado</th>
+                                <th>Factor</th>
+                                <th>Resultado Test</th>
+                                <th>Reporte</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaSeguimientoDocente"></tbody>
+                    </table>
+                    <button class="btn" style="margin-top: 12px;" onclick="alert('Descargando reporte general de seguimiento emocional en formato PDF/CSV...')">Generar Reporte Grupal</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- C) MÓDULO TUTOR O PADRE DE FAMILIA                        -->
+        <!-- ========================================================= -->
+        <div id="sec-tutor" class="role-section">
+            <h2>C) Módulo Tutor o Padre de Familia</h2>
+
+            <!-- m) Acceder al sistema mediante sus credenciales -->
+            <div id="loginTutor" class="login-box">
+                <h3>Acceso Tutor / Padre de Familia</h3>
+                <p style="font-size: 12px; color: #666;">Ingresa tus credenciales vinculadas al estudiante a tu cargo.</p>
+                <div class="form-group">
+                    <label>Usuario / Identificador Tutor:</label>
+                    <input type="text" id="tutUser" value="tutor.familia@correo.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <input type="password" id="tutPass" value="123456">
+                </div>
+                <button class="btn" style="width: 100%;" onclick="iniciarSesion('Tutor')">Acceder al Panel Familiar</button>
+            </div>
+
+            <div id="panelTutor" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span style="font-size: 13px; color: var(--success-color); font-weight: bold;">● Sesión Familiar Activa</span>
+                    <button class="btn btn-sm btn-danger" onclick="cerrarSesion('Tutor')">Cerrar Sesión</button>
+                </div>
+
+                <div class="grid-2">
+                    <!-- n) Consultar información general relacionada con el seguimiento emocional del estudiante a su cargo -->
+                    <div class="panel-box">
+                        <h3>Seguimiento Emocional del Estudiante a Cargo</h3>
+                        <p style="font-size: 13px; margin: 6px 0;"><strong>Estudiante Vinculado:</strong> Alumno #001 (Activo)</p>
+                        <p style="font-size: 13px; margin: 6px 0;"><strong>Estado General Actual:</strong> <span id="tutorEstadoGeneral" style="font-weight: bold; color: var(--primary-color);">🙂 Feliz / Bien</span></p>
+                        <p style="font-size: 13px; margin: 6px 0;"><strong>Factor Reciente:</strong> <span id="tutorFactorReciente">Escolar / Académico</span></p>
+                        <hr style="border:0; border-top: 1px solid var(--border-color); margin: 12px 0;">
+                        <p style="font-size: 12px; color: #555;">La plataforma monitorea de forma preventiva el bienestar escolar para brindar acompañamiento oportuno.</p>
+                    </div>
+
+                    <!-- o) Consultar los resultados autorizados de las evaluaciones emocionales -->
+                    <div class="panel-box">
+                        <h3>Resultados Autorizados de Evaluaciones Emocionales</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Nivel de Estrés</th>
+                                    <th>Descanso</th>
+                                    <th>Apoyo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaEvaluacionesTutor"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- D) MÓDULO ADMINISTRADOR                                   -->
+        <!-- ========================================================= -->
+        <div id="sec-admin" class="role-section">
+            <h2>D) Módulo Administrador</h2>
+
+            <div class="grid-2">
+                <!-- q) Registrar estudiantes y usuarios / r) Modificar / s) Eliminar o desactivar -->
+                <div class="panel-box">
+                    <h3>Gestión de Estudiantes y Usuarios Autorizados</h3>
+                    <div class="grid-2" style="gap: 10px;">
+                        <div class="form-group">
+                            <label>Nombre / Identificador:</label>
+                            <input type="text" id="adminUserName" placeholder="Ej. Alumno #003">
+                        </div>
+                        <div class="form-group">
+                            <label>Rol del Usuario:</label>
+                            <select id="adminUserRole">
+                                <option value="Estudiante">Estudiante</option>
+                                <option value="Docente">Docente</option>
+                                <option value="Tutor">Tutor / Padre</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" onclick="adminGuardarUsuario()">Registrar Usuario</button>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaUsuariosAdmin"></tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <!-- t) Administrar los test de evaluación emocional -->
+                    <div class="panel-box">
+                        <h3>Administrar Test de Evaluación Emocional</h3>
+                        <p style="font-size: 12px; color: #666;">Edita las preguntas activas que ven los estudiantes en su módulo:</p>
+                        <div class="form-group">
+                            <label>Pregunta 1 del Test:</label>
+                            <input type="text" id="editP1" value="1. ¿Cómo calificarías tu nivel de estrés o presión escolar esta semana?">
+                        </div>
+                        <div class="form-group">
+                            <label>Pregunta 2 del Test:</label>
+                            <input type="text" id="editP2" value="2. ¿Has podido descansar y dormir bien en los últimos días?">
+                        </div>
+                        <div class="form-group">
+                            <label>Pregunta 3 del Test:</label>
+                            <input type="text" id="editP3" value="3. ¿Te has sentido apoyado/a por tu entorno al enfrentar tus actividades?">
+                        </div>
+                        <button class="btn" onclick="actualizarPreguntasTest()">Actualizar Test Emocional</button>
+                    </div>
+
+                    <!-- u) Gestionar las preguntas y respuestas del chatbot -->
+                    <div class="panel-box">
+                        <h3>Gestionar Respuestas Predeterminadas del Chatbot</h3>
+                        <div class="chat-input-group">
+                            <input type="text" id="nuevaQuickReply" placeholder="Ej. Me siento abrumado con las tareas">
+                            <button class="btn" onclick="agregarQuickReply()">Agregar</button>
+                        </div>
+                        <div id="listaQuickRepliesAdmin" style="margin-top: 10px; font-size: 12px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- v) Consultar y administrar los registros almacenados -->
+            <div class="panel-box">
+                <h3>Consultar y Administrar Registros Almacenados en el Sistema</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Estudiante</th>
+                            <th>Tipo de Registro</th>
+                            <th>Detalle</th>
+                            <th>Administrar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaRegistrosGlobales"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURACIÓN DE API GEMINI (IA REAL)
+        // ==========================================
+        // ⚠️ PEGA AQUÍ TU API KEY REAL DE GOOGLE AI STUDIO
+        const GEMINI_API_KEY = "AQ.Ab8RN6IemCnW8GqJ_vfZ7Ftw7Q4hD9jQJsj12ZD1ZkMA0lMvRA"; 
+        let modelosDisponiblesCache = [];
+
+        // ==========================================
+        // BASE DE DATOS EN MEMORIA DEL PROTOTIPO
+        // ==========================================
+        let estadoAnimoSeleccionado = '';
+
+        let usuariosSistema = [
+            { id: 1, nombre: "Alumno #001", rol: "Estudiante", activo: true },
+            { id: 2, nombre: "Alumno #002", rol: "Estudiante", activo: true },
+            { id: 3, nombre: "Docente #01", rol: "Docente", activo: true },
+            { id: 4, nombre: "Tutor #01", rol: "Tutor", activo: true }
+        ];
+
+        let registrosGlobales = [
+            { id: 101, fecha: "15/11/2026", estudiante: "Alumno #001", tipo: "Estado de Ánimo", detalle: "🙂 Feliz / Bien (Escolar / Académico)", animo: "🙂 Feliz / Bien", factor: "Escolar / Académico" },
+            { id: 102, fecha: "15/11/2026", estudiante: "Alumno #002", tipo: "Estado de Ánimo", detalle: "😐 Neutral (Salud / Cansancio)", animo: "😐 Neutral", factor: "Salud / Cansancio" }
+        ];
+
+        let evaluacionesAlmacenadas = [
+            { fecha: "15/11/2026", estudiante: "Alumno #001", estres: "Bajo", descanso: "Sí", apoyo: "Mucho" }
+        ];
+
+        let preguntasTest = [
+            "1. ¿Cómo calificarías tu nivel de estrés o presión escolar esta semana?",
+            "2. ¿Has podido descansar y dormir bien en los últimos días?",
+            "3. ¿Te has sentido apoyado/a por tu entorno al enfrentar tus actividades?"
+        ];
+
+        let respuestasPredeterminadas = [
+            "Me siento un poco estresado",
+            "Necesito consejos para relajarme",
+            "Hoy me siento muy bien",
+            "Tengo problemas para concentrarme"
+        ];
+
+        window.onload = function() {
+            renderizarTodo();
+        };
+
+        function renderizarTodo() {
+            renderizarQuickReplies();
+            renderizarTestEstudiante();
+            renderizarHistorialEstudiante();
+            renderizarVistaDocente();
+            renderizarVistaTutor();
+            renderizarVistaAdmin();
+        }
+
+        function cambiarRol() {
+            const rol = document.getElementById('roleSelect').value;
+            document.querySelectorAll('.role-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('sec-' + rol).classList.add('active');
+            renderizarTodo();
+        }
+
+        function iniciarSesion(tipo) {
+            document.getElementById('login' + tipo).style.display = 'none';
+            document.getElementById('panel' + tipo).style.display = 'block';
+            renderizarTodo();
+        }
+
+        function cerrarSesion(tipo) {
+            document.getElementById('panel' + tipo).style.display = 'none';
+            document.getElementById('login' + tipo).style.display = 'block';
+        }
+
+        function renderizarQuickReplies() {
+            const cont = document.getElementById('quickRepliesContainer');
+            cont.innerHTML = respuestasPredeterminadas.map(texto => 
+                `<button class="quick-btn" onclick="usarRespuestaRapida('${texto}')">${texto}</button>`
+            ).join('');
+        }
+
+        function usarRespuestaRapida(texto) {
+            document.getElementById('userInput').value = texto;
+            enviarMensaje();
+        }
+
+        function renderizarTestEstudiante() {
+            const cont = document.getElementById('contenedorPreguntasTest');
+            cont.innerHTML = `
+                <div class="form-group">
+                    <div class="test-question">${preguntasTest[0]}</div>
+                    <select id="p1">
+                        <option value="Bajo">Bajo - Me siento tranquilo/a</option>
+                        <option value="Moderado">Moderado - Algunas tareas me preocupan</option>
+                        <option value="Alto">Alto - Sumo mucha presión y fatiga</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="test-question">${preguntasTest[1]}</div>
+                    <select id="p2">
+                        <option value="Sí">Sí, descanso adecuadamente</option>
+                        <option value="A veces">A veces me cuesta conciliar el sueño</option>
+                        <option value="No">No, duermo muy poco y me siento cansado/a</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="test-question">${preguntasTest[2]}</div>
+                    <select id="p3">
+                        <option value="Mucho">Sí, cuento con buen apoyo</option>
+                        <option value="Poco">A veces siento que estoy solo/a</option>
+                        <option value="Nada">No siento apoyo suficiente</option>
+                    </select>
+                </div>
+            `;
+        }
+
+        function seleccionarAnimo(animo, elemento) {
+            estadoAnimoSeleccionado = animo;
+            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
+            elemento.classList.add('selected');
+        }
+
+        function guardarRegistroAnimo() {
+            if(!estadoAnimoSeleccionado) {
+                alert('Por favor selecciona una carita con tu estado de ánimo.');
+                return;
+            }
+            const factor = document.getElementById('factorSelect').value;
+            const fecha = new Date().toLocaleDateString();
+
+            registrosGlobales.unshift({
+                id: Date.now(),
+                fecha: fecha,
+                estudiante: "Alumno #001",
+                tipo: "Estado de Ánimo",
+                detalle: `${estadoAnimoSeleccionado} (${factor})`,
+                animo: estadoAnimoSeleccionado,
+                factor: factor
+            });
+
+            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
+            estadoAnimoSeleccionado = '';
+            renderizarTodo();
+            alert('¡Estado de ánimo registrado y guardado en tu historial!');
+        }
+
+        function renderizarHistorialEstudiante() {
+            const tbody = document.getElementById('tablaHistorialEstudiante');
+            const misRegistros = registrosGlobales.filter(r => r.estudiante === "Alumno #001" && r.tipo === "Estado de Ánimo");
+            tbody.innerHTML = misRegistros.map(r => `
+                <tr>
+                    <td>${r.fecha}</td>
+                    <td>${r.animo}</td>
+                    <td>${r.factor}</td>
+                </tr>
+            `).join('');
+        }
+
+        function enviarTestAlChat() {
+            const p1 = document.getElementById('p1').value;
+            const p2 = document.getElementById('p2').value;
+            const p3 = document.getElementById('p3').value;
+            const fecha = new Date().toLocaleDateString();
+
+            evaluacionesAlmacenadas.unshift({
+                fecha: fecha,
+                estudiante: "Alumno #001",
+                estres: p1,
+                descanso: p2,
+                apoyo: p3
+            });
+
+            registrosGlobales.unshift({
+                id: Date.now(),
+                fecha: fecha,
+                estudiante: "Alumno #001",
+                tipo: "Test Emocional",
+                detalle: `Estrés: ${p1} | Descanso: ${p2} | Apoyo: ${p3}`
+            });
+
+            renderizarTodo();
+
+            const mensajeTest = `Acabo de realizar mi test de evaluación emocional:\n- Estrés escolar: ${p1}\n- Descanso: ${p2}\n- Apoyo: ${p3}\n\nDame una recomendación breve de bienestar.`;
+            document.getElementById('userInput').value = mensajeTest;
+            enviarMensaje();
+        }
+
+        function renderizarVistaDocente() {
+            const alumnos = usuariosSistema.filter(u => u.rol === "Estudiante" && u.activo);
+            const animos = registrosGlobales.filter(r => r.tipo === "Estado de Ánimo");
+
+            document.getElementById('docTotalAlumnos').innerText = alumnos.length;
+            document.getElementById('docTotalRegistros').innerText = animos.length;
+
+            const tbody = document.getElementById('tablaSeguimientoDocente');
+            tbody.innerHTML = alumnos.map((al, idx) => {
+                const ultimoAnimo = animos.find(a => a.estudiante === al.nombre);
+                const ultimaEval = evaluacionesAlmacenadas.find(e => e.estudiante === al.nombre);
+                return `
+                    <tr>
+                        <td>MAT-00${idx + 1}</td>
+                        <td>${al.nombre}</td>
+                        <td>${ultimoAnimo ? ultimoAnimo.animo : 'Sin registro'}</td>
+                        <td>${ultimoAnimo ? ultimoAnimo.factor : '-'}</td>
+                        <td>${ultimaEval ? 'Estrés ' + ultimaEval.estres : 'Pendiente'}</td>
+                        <td><button class="btn btn-sm" onclick="alert('Mostrando historial autorizado de ${al.nombre}.')">Consultar</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderizarVistaTutor() {
+            const ultimoAnimo = registrosGlobales.find(r => r.estudiante === "Alumno #001" && r.tipo === "Estado de Ánimo");
+            if (ultimoAnimo) {
+                document.getElementById('tutorEstadoGeneral').innerText = ultimoAnimo.animo;
+                document.getElementById('tutorFactorReciente').innerText = ultimoAnimo.factor;
+            }
+
+            const tbody = document.getElementById('tablaEvaluacionesTutor');
+            const evalsAlumno = evaluacionesAlmacenadas.filter(e => e.estudiante === "Alumno #001");
+            tbody.innerHTML = evalsAlumno.map(e => `
+                <tr>
+                    <td>${e.fecha}</td>
+                    <td>${e.estres}</td>
+                    <td>${e.descanso}</td>
+                    <td>${e.apoyo}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderizarVistaAdmin() {
+            const tbodyUsers = document.getElementById('tablaUsuariosAdmin');
+            tbodyUsers.innerHTML = usuariosSistema.map(u => `
+                <tr>
+                    <td>${u.nombre}</td>
+                    <td>${u.rol}</td>
+                    <td><span class="badge ${u.activo ? 'badge-ok' : 'badge-off'}">${u.activo ? 'Activo' : 'Inactivo'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="adminModificarUsuario(${u.id})">Editar</button>
+                        <button class="btn btn-sm ${u.activo ? 'btn-danger' : 'btn-success'}" onclick="adminToggleUsuario(${u.id})">${u.activo ? 'Desactivar' : 'Activar'}</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            const contQR = document.getElementById('listaQuickRepliesAdmin');
+            contQR.innerHTML = respuestasPredeterminadas.map((qr, i) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #eee;">
+                    <span>• ${qr}</span>
+                    <button class="btn btn-sm btn-danger" onclick="eliminarQuickReply(${i})">X</button>
+                </div>
+            `).join('');
+
+            const tbodyReg = document.getElementById('tablaRegistrosGlobales');
+            tbodyReg.innerHTML = registrosGlobales.map(r => `
+                <tr>
+                    <td>${r.fecha}</td>
+                    <td>${r.estudiante}</td>
+                    <td>${r.tipo}</td>
+                    <td>${r.detalle}</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="adminEliminarRegistro(${r.id})">Eliminar</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function adminGuardarUsuario() {
+            const nombre = document.getElementById('adminUserName').value.trim();
+            const rol = document.getElementById('adminUserRole').value;
+            if (!nombre) { alert('Ingresa un nombre o identificador.'); return; }
+
+            usuariosSistema.push({ id: Date.now(), nombre: nombre, rol: rol, activo: true });
+            document.getElementById('adminUserName').value = '';
+            renderizarTodo();
+            alert('Usuario registrado correctamente.');
+        }
+
+        function adminModificarUsuario(id) {
+            const usuario = usuariosSistema.find(u => u.id === id);
+            if (!usuario) return;
+            const nuevoNombre = prompt("Modificar nombre o identificador del usuario:", usuario.nombre);
+            if (nuevoNombre && nuevoNombre.trim() !== "") {
+                usuario.nombre = nuevoNombre.trim();
+                renderizarTodo();
+            }
+        }
+
+        function adminToggleUsuario(id) {
+            const usuario = usuariosSistema.find(u => u.id === id);
+            if (usuario) {
+                usuario.activo = !usuario.activo;
+                renderizarTodo();
+            }
+        }
+
+        function actualizarPreguntasTest() {
+            preguntasTest[0] = document.getElementById('editP1').value;
+            preguntasTest[1] = document.getElementById('editP2').value;
+            preguntasTest[2] = document.getElementById('editP3').value;
+            renderizarTestEstudiante();
+            alert('Preguntas del test emocional actualizadas correctamente.');
+        }
+
+        function agregarQuickReply() {
+            const texto = document.getElementById('nuevaQuickReply').value.trim();
+            if (!texto) return;
+            respuestasPredeterminadas.push(texto);
+            document.getElementById('nuevaQuickReply').value = '';
+            renderizarTodo();
+        }
+
+        function eliminarQuickReply(index) {
+            respuestasPredeterminadas.splice(index, 1);
+            renderizarTodo();
+        }
+
+        function adminEliminarRegistro(id) {
+            registrosGlobales = registrosGlobales.filter(r => r.id !== id);
+            renderizarTodo();
+        }
+
+        // ==========================================
+        // CONEXIÓN CON API GEMINI (IA REAL)
+        // ==========================================
+        async function enviarMensaje() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if(!text) return;
+
+            agregarMensaje(text, 'user');
+            input.value = '';
+
+            const idCargando = agregarMensaje("Analizando respuesta...", 'bot');
+
+            try {
+                const respuestaIA = await consultarGeminiAutomatico(text);
+                document.getElementById(idCargando).innerText = respuestaIA;
+            } catch (error) {
+                document.getElementById(idCargando).innerText = "Orientación de bienestar: Es completamente comprensible que te sientas así. Respira hondo y recuerda que tu bienestar es muy importante. ¿Cómo te sientes ahora?";
+            }
+        }
+
+        function agregarMensaje(texto, emisor) {
+            const box = document.getElementById('chatHistory');
+            const div = document.createElement('div');
+            const msgId = 'msg-' + Date.now() + Math.random();
+            div.id = msgId;
+            div.className = `msg msg-${emisor}`;
+            div.innerText = texto;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+            return msgId;
+        }
+
+        async function obtenerModelosActivos() {
+            if (modelosDisponiblesCache.length > 0) return modelosDisponiblesCache;
+
+            const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`);
+            const data = await resp.json();
+
+            if (!resp.ok) throw new Error("API Key inválida.");
+
+            const validos = (data.models || [])
+                .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+                .map(m => m.name);
+
+            validos.sort((a, b) => {
+                const score = name => name.includes('lite') ? 1 : (name.includes('flash') ? 2 : 3);
+                return score(a) - score(b);
+            });
+
+            if (validos.length === 0) throw new Error("Sin modelos habilitados.");
+            modelosDisponiblesCache = validos;
+            return validos;
+        }
+
+        async function consultarGeminiAutomatico(mensajeUsuario) {
+            if (GEMINI_API_KEY === "AIzaSyTU_CLAVE_REAL_AQUI" || !GEMINI_API_KEY) {
+                throw new Error("Falta API Key.");
+            }
+
+            const modelos = await obtenerModelosActivos();
+            const promptSistema = "Eres un asistente virtual de bienestar emocional institucional para estudiantes. Responde de forma empática, cálida y completa, explicando con claridad (máximo 3 o 4 frases bien desarrolladas sin cortar las oraciones). Dirígete al estudiante de forma general.";
+
+            const cuerpoPeticion = {
+                contents: [{ parts: [{ text: promptSistema + "\n\nEstudiante: " + mensajeUsuario }] }],
+                generationConfig: { maxOutputTokens: 300, temperature: 0.7 } // Límite ampliado para evitar cortes
+            };
+
+            for (const nombreModelo of modelos) {
+                try {
+                    const url = `https://generativelanguage.googleapis.com/v1beta/${nombreModelo}:generateContent?key=${GEMINI_API_KEY}`;
+                    const respuesta = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(cuerpoPeticion)
+                    });
+                    const datos = await respuesta.json();
+                    if (respuesta.ok && datos.candidates && datos.candidates[0]?.content?.parts?.[0]?.text) {
+                        return datos.candidates[0].content.parts[0].text;
+                    }
+                } catch (err) {}
+            }
+            throw new Error("Saturación temporal.");
+        }
+    </script>
+</body>
+</html>
