@@ -252,11 +252,9 @@
                 </div>
             </div>
 
-            <!-- Contenedor protegido: oculto hasta que el alumno inicie sesión -->
             <div id="contenidoEstudianteProtegido" style="display: none;">
                 <div class="grid-2">
                     <div>
-                        <!-- Chatbot -->
                         <div class="panel-box">
                             <h3>Chatbot de Bienestar Emocional</h3>
                             <div id="chatHistory" class="chat-box">
@@ -272,7 +270,6 @@
                             </div>
                         </div>
 
-                        <!-- Registro de estado de ánimo -->
                         <div class="panel-box">
                             <h3>Registro Diario de Estado de Ánimo</h3>
                             <div class="mood-selector">
@@ -293,7 +290,6 @@
                     </div>
 
                     <div>
-                        <!-- Test emocional -->
                         <div class="panel-box">
                             <h3>Test de Evaluación Emocional</h3>
                             <p style="font-size: 12px; color: #666;">Responde el cuestionario institucional para evaluar tu bienestar actual.</p>
@@ -303,7 +299,6 @@
                             <button class="btn" style="width: 100%; margin-top: 8px;" onclick="enviarTestAlChat()">Evaluar Test y Obtener Orientación</button>
                         </div>
 
-                        <!-- Historial -->
                         <div class="panel-box">
                             <h3>Historial de Estados de Ánimo</h3>
                             <div style="max-height: 150px; overflow-y: auto;">
@@ -445,7 +440,6 @@
         <div id="sec-admin" class="role-section">
             <h2>D) Módulo Administrador</h2>
 
-            <!-- Expediente Minucioso del Alumno en Supabase -->
             <div class="panel-box" style="border-left: 4px solid var(--success-color); margin-bottom: 20px;">
                 <h3>Expediente Individual y Notas del Tutor (Base de Datos en la Nube)</h3>
                 <div class="form-group">
@@ -520,20 +514,31 @@
                 <div>
                     <div class="panel-box">
                         <h3>Administrar Test de Evaluación Emocional</h3>
-                        <p style="font-size: 12px; color: #666;">Edita las preguntas activas que ven los estudiantes en su módulo:</p>
+                        <p style="font-size: 12px; color: #666;">Agrega, edita o elimina las preguntas que ven los estudiantes en su cuestionario:</p>
+
+                        <div id="listaPreguntasTestAdmin" style="margin-bottom: 14px;"></div>
+
+                        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 12px 0;">
+                        <h4 style="margin: 0 0 8px 0; font-size: 13px; color: var(--primary-color);">Agregar Nueva Pregunta al Test</h4>
                         <div class="form-group">
-                            <label>Pregunta 1 del Test:</label>
-                            <input type="text" id="editP1" value="1. ¿Cómo calificarías tu nivel de estrés o presión escolar esta semana?">
+                            <label>Texto de la nueva pregunta:</label>
+                            <input type="text" id="nuevaPreguntaTexto" placeholder="Ej. ¿Cómo te sientes respecto a tu carga de tareas hoy?">
                         </div>
-                        <div class="form-group">
-                            <label>Pregunta 2 del Test:</label>
-                            <input type="text" id="editP2" value="2. ¿Has podido descansar y dormir bien en los últimos días?">
+                        <div class="grid-3" style="gap: 8px; margin-bottom: 8px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Opción 1 (Favorable):</label>
+                                <input type="text" id="nuevaOp1" value="Bien / Tranquilo">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Opción 2 (Intermedia):</label>
+                                <input type="text" id="nuevaOp2" value="Regular / A veces">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Opción 3 (Atención):</label>
+                                <input type="text" id="nuevaOp3" value="Difícil / Con presión">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Pregunta 3 del Test:</label>
-                            <input type="text" id="editP3" value="3. ¿Te has sentido apoyado/a por tu entorno al enfrentar tus actividades?">
-                        </div>
-                        <button class="btn" onclick="actualizarPreguntasTest()">Actualizar Test Emocional</button>
+                        <button class="btn btn-success" onclick="agregarPreguntaTest()">+ Agregar Pregunta al Test</button>
                     </div>
 
                     <div class="panel-box">
@@ -567,9 +572,6 @@
     </div>
 
     <script>
-        // ==========================================
-        // BASE DE DATOS EN MEMORIA DEL PROTOTIPO
-        // ==========================================
         let estadoAnimoSeleccionado = '';
 
         let usuariosSistema = [
@@ -589,9 +591,33 @@
         ];
 
         let preguntasTest = [
-            "1. ¿Cómo calificarías tu nivel de estrés o presión escolar esta semana?",
-            "2. ¿Has podido descansar y dormir bien en los últimos días?",
-            "3. ¿Te has sentido apoyado/a por tu entorno al enfrentar tus actividades?"
+            {
+                id: 1,
+                texto: "¿Cómo calificarías tu nivel de estrés o presión escolar esta semana?",
+                opciones: [
+                    { valor: "Bajo", etiqueta: "Bajo - Me siento tranquilo/a" },
+                    { valor: "Moderado", etiqueta: "Moderado - Algunas tareas me preocupan" },
+                    { valor: "Alto", etiqueta: "Alto - Sumo mucha presión y fatiga" }
+                ]
+            },
+            {
+                id: 2,
+                texto: "¿Has podido descansar y dormir bien en los últimos días?",
+                opciones: [
+                    { valor: "Sí", etiqueta: "Sí, descanso adecuadamente" },
+                    { valor: "A veces", etiqueta: "A veces me cuesta conciliar el sueño" },
+                    { valor: "No", etiqueta: "No, duermo muy poco y me siento cansado/a" }
+                ]
+            },
+            {
+                id: 3,
+                texto: "¿Te has sentido apoyado/a por tu entorno al enfrentar tus actividades?",
+                opciones: [
+                    { valor: "Mucho", etiqueta: "Sí, cuento con buen apoyo" },
+                    { valor: "Poco", etiqueta: "A veces siento que estoy solo/a" },
+                    { valor: "Nada", etiqueta: "No siento apoyo suficiente" }
+                ]
+            }
         ];
 
         let respuestasPredeterminadas = [
@@ -608,6 +634,7 @@
         function renderizarTodo() {
             renderizarQuickReplies();
             renderizarTestEstudiante();
+            renderizarAdminTest();
             renderizarHistorialEstudiante();
             renderizarVistaDocente();
             renderizarVistaTutor();
@@ -649,32 +676,103 @@
 
         function renderizarTestEstudiante() {
             const cont = document.getElementById('contenedorPreguntasTest');
-            cont.innerHTML = `
+            if (!preguntasTest.length) {
+                cont.innerHTML = '<p style="font-size: 12px; color: #666;">No hay preguntas activas en el test por el momento.</p>';
+                return;
+            }
+
+            cont.innerHTML = preguntasTest.map((preg, idx) => `
                 <div class="form-group">
-                    <div class="test-question">${preguntasTest[0]}</div>
-                    <select id="p1">
-                        <option value="Bajo">Bajo - Me siento tranquilo/a</option>
-                        <option value="Moderado">Moderado - Algunas tareas me preocupan</option>
-                        <option value="Alto">Alto - Sumo mucha presión y fatiga</option>
+                    <div class="test-question">${idx + 1}. ${preg.texto}</div>
+                    <select id="respTest_${preg.id}" data-pregunta="${preg.texto}">
+                        ${preg.opciones.map(op => `<option value="${op.valor}">${op.etiqueta}</option>`).join('')}
                     </select>
                 </div>
-                <div class="form-group">
-                    <div class="test-question">${preguntasTest[1]}</div>
-                    <select id="p2">
-                        <option value="Sí">Sí, descanso adecuadamente</option>
-                        <option value="A veces">A veces me cuesta conciliar el sueño</option>
-                        <option value="No">No, duermo muy poco y me siento cansado/a</option>
-                    </select>
+            `).join('');
+        }
+
+        function renderizarAdminTest() {
+            const cont = document.getElementById('listaPreguntasTestAdmin');
+            if (!cont) return;
+
+            if (!preguntasTest.length) {
+                cont.innerHTML = '<p style="font-size: 12px; color: #666;">Aún no hay preguntas registradas.</p>';
+                return;
+            }
+
+            cont.innerHTML = preguntasTest.map((preg, idx) => `
+                <div style="background: white; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <strong style="font-size: 12px;">Pregunta ${idx + 1}</strong>
+                        <button class="btn btn-sm btn-danger" onclick="eliminarPreguntaTest(${preg.id})">Eliminar</button>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 6px;">
+                        <input type="text" id="adminTextoPreg_${preg.id}" value="${preg.texto.replace(/"/g, '&quot;')}">
+                    </div>
+                    <div class="grid-3" style="gap: 6px; margin-bottom: 8px;">
+                        <input type="text" id="adminOp0_${preg.id}" value="${preg.opciones[0].etiqueta.replace(/"/g, '&quot;')}" placeholder="Opción 1">
+                        <input type="text" id="adminOp1_${preg.id}" value="${preg.opciones[1].etiqueta.replace(/"/g, '&quot;')}" placeholder="Opción 2">
+                        <input type="text" id="adminOp2_${preg.id}" value="${preg.opciones[2].etiqueta.replace(/"/g, '&quot;')}" placeholder="Opción 3">
+                    </div>
+                    <button class="btn btn-sm" onclick="actualizarPreguntasTest(${preg.id})">Guardar Cambios de Pregunta</button>
                 </div>
-                <div class="form-group">
-                    <div class="test-question">${preguntasTest[2]}</div>
-                    <select id="p3">
-                        <option value="Mucho">Sí, cuento con buen apoyo</option>
-                        <option value="Poco">A veces siento que estoy solo/a</option>
-                        <option value="Nada">No siento apoyo suficiente</option>
-                    </select>
-                </div>
-            `;
+            `).join('');
+        }
+
+        function agregarPreguntaTest() {
+            const texto = document.getElementById('nuevaPreguntaTexto').value.trim();
+            const op1 = document.getElementById('nuevaOp1').value.trim();
+            const op2 = document.getElementById('nuevaOp2').value.trim();
+            const op3 = document.getElementById('nuevaOp3').value.trim();
+
+            if (!texto || !op1 || !op2 || !op3) {
+                alert('Escribe el enunciado de la pregunta y sus 3 opciones de respuesta.');
+                return;
+            }
+
+            preguntasTest.push({
+                id: Date.now(),
+                texto: texto,
+                opciones: [
+                    { valor: op1, etiqueta: op1 },
+                    { valor: op2, etiqueta: op2 },
+                    { valor: op3, etiqueta: op3 }
+                ]
+            });
+
+            document.getElementById('nuevaPreguntaTexto').value = '';
+            renderizarTodo();
+            alert('¡Nueva pregunta agregada al test emocional!');
+        }
+
+        function actualizarPreguntasTest(id) {
+            const preg = preguntasTest.find(p => p.id === id);
+            if (!preg) return;
+
+            const nuevoTexto = document.getElementById(`adminTextoPreg_${id}`).value.trim();
+            const e0 = document.getElementById(`adminOp0_${id}`).value.trim();
+            const e1 = document.getElementById(`adminOp1_${id}`).value.trim();
+            const e2 = document.getElementById(`adminOp2_${id}`).value.trim();
+
+            if (!nuevoTexto || !e0 || !e1 || !e2) {
+                alert('La pregunta y las 3 opciones no pueden quedar vacías.');
+                return;
+            }
+
+            preg.texto = nuevoTexto;
+            preg.opciones = [
+                { valor: e0, etiqueta: e0 },
+                { valor: e1, etiqueta: e1 },
+                { valor: e2, etiqueta: e2 }
+            ];
+
+            renderizarTodo();
+            alert('Pregunta del test actualizada correctamente.');
+        }
+
+        function eliminarPreguntaTest(id) {
+            preguntasTest = preguntasTest.filter(p => p.id !== id);
+            renderizarTodo();
         }
 
         function seleccionarAnimo(animo, elemento) {
@@ -724,19 +822,31 @@
         }
 
         async function enviarTestAlChat() {
-            const p1 = document.getElementById('p1').value;
-            const p2 = document.getElementById('p2').value;
-            const p3 = document.getElementById('p3').value;
+            if (!preguntasTest.length) {
+                alert('No hay preguntas disponibles en el test.');
+                return;
+            }
+
+            const respuestas = preguntasTest.map((preg, idx) => {
+                const select = document.getElementById(`respTest_${preg.id}`);
+                const valor = select ? select.value : '';
+                return {
+                    numero: idx + 1,
+                    pregunta: preg.texto,
+                    respuesta: valor
+                };
+            });
+
             const fecha = new Date().toLocaleDateString();
             const nombreAlumno = alumnoActualSupabase ? alumnoActualSupabase.nombre : "Alumno #001";
-            const resumenTest = `Estrés: ${p1} | Descanso: ${p2} | Apoyo: ${p3}`;
+            const resumenTest = respuestas.map(r => `P${r.numero}: ${r.respuesta}`).join(' | ');
 
             evaluacionesAlmacenadas.unshift({
                 fecha: fecha,
                 estudiante: nombreAlumno,
-                estres: p1,
-                descanso: p2,
-                apoyo: p3
+                estres: respuestas[0]?.respuesta || '-',
+                descanso: respuestas[1]?.respuesta || '-',
+                apoyo: respuestas[2]?.respuesta || '-'
             });
 
             registrosGlobales.unshift({
@@ -749,7 +859,8 @@
 
             renderizarTodo();
 
-            const mensajeTest = `Acabo de realizar mi test de evaluación emocional:\n- Estrés escolar: ${p1}\n- Descanso: ${p2}\n- Apoyo: ${p3}\n\nDame una recomendación breve de bienestar.`;
+            const detalleLineas = respuestas.map(r => `- ${r.pregunta} -> ${r.respuesta}`).join('\n');
+            const mensajeTest = `Acabo de realizar mi test de evaluación emocional:\n${detalleLineas}\n\nDame una recomendación breve de bienestar.`;
             document.getElementById('userInput').value = mensajeTest;
             const respuestaIA = await enviarMensaje();
             await guardarRegistroEnNube('test', null, null, resumenTest, respuestaIA || '');
@@ -861,14 +972,6 @@
             }
         }
 
-        function actualizarPreguntasTest() {
-            preguntasTest[0] = document.getElementById('editP1').value;
-            preguntasTest[1] = document.getElementById('editP2').value;
-            preguntasTest[2] = document.getElementById('editP3').value;
-            renderizarTestEstudiante();
-            alert('Preguntas del test emocional actualizadas correctamente.');
-        }
-
         function agregarQuickReply() {
             const texto = document.getElementById('nuevaQuickReply').value.trim();
             if (!texto) return;
@@ -887,9 +990,6 @@
             renderizarTodo();
         }
 
-        // ==========================================
-        // CONEXIÓN CON API GEMINI (IA REAL VÍA VERCEL)
-        // ==========================================
         async function enviarMensaje() {
             const input = document.getElementById('userInput');
             const text = input.value.trim();
@@ -955,9 +1055,6 @@
             return data.candidates?.[0]?.content?.parts?.[0]?.text || "Orientación de bienestar: Es completamente comprensible que te sientas así. Respira hondo y recuerda que tu bienestar es muy importante. ¿Cómo te sientes ahora?";
         }
 
-        // ==========================================
-        // CONEXIÓN A SUPABASE (CUENTAS Y EXPEDIENTE)
-        // ==========================================
         const SUPABASE_URL = 'https://hoaxkgzimawcpduejthh.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_0Bb5MdnIQ9rEcNmdeu_Ngg_UTtojUXC';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
