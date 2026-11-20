@@ -205,7 +205,7 @@
   <div id="formulariosAccesoAlumno" class="grid-2" style="gap:15px;">
     <div>
       <h4>Iniciar Sesión (Alumno Registrado)</h4>
-      <div class="form-group"><label>Matrícula:</label><input type="text" id="loginMatricula" placeholder="Ej. 2026001"></div>
+      <div class="form-group"><label>Matrícula:</label><input type="text" id="loginMatricula" placeholder="Ej. 2026001" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')"></div>
       <div class="form-group"><label>Contraseña:</label><input type="password" id="loginPassAlumno" placeholder="Mínimo 6 caracteres"></div>
       <button class="btn" onclick="iniciarSesionAlumnoSupabase()">Entrar a mi Cuenta</button>
     </div>
@@ -214,7 +214,7 @@
       <h4>Crear Cuenta Nueva de Alumno</h4>
       <div class="form-group"><label>Nombre completo:</label><input type="text" id="regNombre" placeholder="Nombre y apellidos"></div>
       <div class="grid-2" style="gap:8px;">
-        <div class="form-group"><label>Matrícula:</label><input type="text" id="regMatricula" placeholder="Ej. 2026001"></div>
+      <div class="form-group"><label>Matrícula:</label><input type="text" id="regMatricula" placeholder="Ej. 2026001" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')"></div>
         <div class="form-group"><label>Grupo:</label><input type="text" id="regGrupo" placeholder="Ej. 3°A"></div>
       </div>
       <div class="grid-2" style="gap:8px;">
@@ -915,7 +915,12 @@ async function registrarAlumnoSupabase() {
     return;
   }
 
-  const emailInstitucional = `${matricula.toLowerCase()}@emotitech.edu.mx`;
+if (matricula.includes('@')) {
+    alert("Ingresa únicamente tu número o clave de matrícula (sin correo electrónico).");
+    return;
+}
+const matriculaLimpia = matricula.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+const emailInstitucional = `${matriculaLimpia}@emotitech.edu.mx`;
   const { data, error } = await supabaseClient.auth.signUp({ email: emailInstitucional, password });
 
   if (error) {
@@ -953,7 +958,12 @@ async function iniciarSesionAlumnoSupabase() {
     return;
   }
 
-  const emailInstitucional = `${matricula.toLowerCase()}@emotitech.edu.mx`;
+  if (matricula.includes('@')) {
+    alert("Ingresa únicamente tu número o clave de matrícula (sin correo electrónico).");
+    return;
+}
+const matriculaLimpia = matricula.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+const emailInstitucional = `${matriculaLimpia}@emotitech.edu.mx`;
   const { error } = await supabaseClient.auth.signInWithPassword({ email: emailInstitucional, password });
 
   if (error) {
