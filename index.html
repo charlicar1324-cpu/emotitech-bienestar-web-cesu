@@ -148,7 +148,7 @@
         
         .form-group { margin-bottom: 10px; }
         .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
-        .form-group select, .form-group input { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 13px; }
+        .form-group select, .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 13px; font-family: inherit; }
         
         .test-question { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
 
@@ -195,104 +195,129 @@
         <!-- ========================================================= -->
         <div id="sec-estudiante" class="role-section active">
             <h2>A) Módulo Estudiante</h2>
+            
             <div class="panel-box" id="panelCuentaAlumno" style="margin-bottom: 20px; border-left: 4px solid #2b6cb0;">
-  <h3>Cuenta del Alumno (Registro e Inicio de Sesión)</h3>
-  <div id="alumnoSesionActiva" style="display:none; background:#ebf8ff; padding:12px; border-radius:6px; margin-bottom:10px;">
-    <strong>Alumno conectado:</strong> <span id="infoAlumnoConectado"></span>
-    <button class="btn" style="margin-left:15px; background:#e53e3e;" onclick="cerrarSesionAlumno()">Cerrar Sesión</button>
-  </div>
-
-  <div id="formulariosAccesoAlumno" class="grid-2" style="gap:15px;">
-    <div>
-      <h4>Iniciar Sesión (Alumno Registrado)</h4>
-      <div class="form-group"><label>Matrícula:</label><input type="text" id="loginMatricula" placeholder="Ej. 2026001" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')"></div>
-      <div class="form-group"><label>Contraseña:</label><input type="password" id="loginPassAlumno" placeholder="Mínimo 6 caracteres"></div>
-      <button class="btn" onclick="iniciarSesionAlumnoSupabase()">Entrar a mi Cuenta</button>
-    </div>
-
-    <div>
-      <h4>Crear Cuenta Nueva de Alumno</h4>
-      <div class="form-group"><label>Nombre completo:</label><input type="text" id="regNombre" placeholder="Nombre y apellidos"></div>
-      <div class="grid-2" style="gap:8px;">
-      <div class="form-group"><label>Matrícula:</label><input type="text" id="regMatricula" placeholder="Ej. 2026001" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')"></div>
-        <div class="form-group"><label>Grupo:</label><input type="text" id="regGrupo" placeholder="Ej. 3°A"></div>
-      </div>
-      <div class="grid-2" style="gap:8px;">
-        <div class="form-group"><label>Edad:</label><input type="number" id="regEdad" placeholder="Ej. 15"></div>
-        <div class="form-group"><label>Contacto de emergencia:</label><input type="text" id="regEmergencia" placeholder="Nombre y teléfono"></div>
-      </div>
-      <div class="form-group"><label>Contraseña:</label><input type="password" id="regPassAlumno" placeholder="Mínimo 6 caracteres"></div>
-      <button class="btn btn-success" onclick="registrarAlumnoSupabase()">Registrar Cuenta</button>
-    </div>
-  </div>
-</div>
-<div id="contenidoEstudianteProtegido" style="display: none;">
-            <div class="grid-2">
-                <div>
-                    <!-- a) Acceder al chatbot / c) Interactuar mediante mensajes o respuestas predeterminadas -->
-                    <div class="panel-box">
-                        <h3>Chatbot de Bienestar Emocional</h3>
-                        <div id="chatHistory" class="chat-box">
-                            <div class="msg msg-bot">¡Hola! Soy tu asistente virtual de bienestar. Puedes escribir cómo te sientes o elegir una opción rápida abajo.</div>
-                        </div>
-                        
-                        <!-- Respuestas predeterminadas dinámicas (gestionadas por el Admin) -->
-                        <div style="font-size: 11px; color: #666; margin-bottom: 4px;">Respuestas rápidas predeterminadas:</div>
-                        <div id="quickRepliesContainer" class="quick-replies"></div>
-
-                        <div class="chat-input-group">
-                            <input type="text" id="userInput" placeholder="Escribe tu mensaje..." onkeypress="if(event.key==='Enter') enviarMensaje()">
-                            <button class="btn" onclick="enviarMensaje()">Enviar</button>
-                        </div>
-                    </div>
-
-                    <!-- b) Registrar su estado de ánimo -->
-                    <div class="panel-box">
-                        <h3>Registro Diario de Estado de Ánimo</h3>
-                        <div class="mood-selector">
-                            <button class="mood-btn" onclick="seleccionarAnimo('🙁 Triste / Mal', this)">🙁</button>
-                            <button class="mood-btn" onclick="seleccionarAnimo('😐 Neutral', this)">😐</button>
-                            <button class="mood-btn" onclick="seleccionarAnimo('🙂 Feliz / Bien', this)">🙂</button>
-                        </div>
-                        <div class="form-group">
-                            <label>Factor asociado:</label>
-                            <select id="factorSelect">
-                                <option value="Escolar / Académico">Escolar / Académico</option>
-                                <option value="Personal / Familiar">Personal / Familiar</option>
-                                <option value="Salud / Cansancio">Salud / Cansancio</option>
-                            </select>
-                        </div>
-                        <button class="btn" style="width: 100%;" onclick="guardarRegistroAnimo()">Registrar Estado de Ánimo</button>
-                    </div>
+                <h3>Cuenta del Alumno (Registro e Inicio de Sesión)</h3>
+                <div id="alumnoSesionActiva" style="display:none; background:#ebf8ff; padding:12px; border-radius:6px; margin-bottom:10px;">
+                    <strong>Alumno conectado:</strong> <span id="infoAlumnoConectado"></span>
+                    <button class="btn" style="margin-left:15px; background:#e53e3e;" onclick="cerrarSesionAlumno()">Cerrar Sesión</button>
                 </div>
 
-                <div>
-                    <!-- d) Realizar test de evaluación emocional -->
-                    <div class="panel-box">
-                        <h3>Test de Evaluación Emocional</h3>
-                        <p style="font-size: 12px; color: #666;">Responde el cuestionario institucional para evaluar tu bienestar actual.</p>
-                        
-                        <div id="contenedorPreguntasTest">
-                            <!-- Se carga dinámicamente para que el Admin pueda editarlo -->
+                <div id="formulariosAccesoAlumno" class="grid-2" style="gap:15px;">
+                    <div>
+                        <h4>Iniciar Sesión (Alumno Registrado)</h4>
+                        <div class="form-group">
+                            <label>Matrícula:</label>
+                            <input type="text" id="loginMatricula" placeholder="Ej. 2026001" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')">
                         </div>
-
-                        <button class="btn" style="width: 100%; margin-top: 8px;" onclick="enviarTestAlChat()">Evaluar Test y Obtener Orientación</button>
+                        <div class="form-group">
+                            <label>Contraseña:</label>
+                            <input type="password" id="loginPassAlumno" placeholder="Mínimo 6 caracteres">
+                        </div>
+                        <button class="btn" onclick="iniciarSesionAlumnoSupabase()">Entrar a mi Cuenta</button>
                     </div>
 
-                    <!-- f) Consultar su historial de estados de ánimo -->
-                    <div class="panel-box">
-                        <h3>Historial de Estados de Ánimo</h3>
-                        <div style="max-height: 150px; overflow-y: auto;">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Estado de Ánimo</th>
-                                        <th>Factor</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablaHistorialEstudiante"></tbody>
-                            </table>
+                    <div>
+                        <h4>Crear Cuenta Nueva de Alumno</h4>
+                        <div class="form-group">
+                            <label>Nombre completo:</label>
+                            <input type="text" id="regNombre" placeholder="Nombre y apellidos">
+                        </div>
+                        <div class="grid-2" style="gap:8px;">
+                            <div class="form-group">
+                                <label>Matrícula:</label>
+                                <input type="text" id="regMatricula" placeholder="Ej. 2026001" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')">
+                            </div>
+                            <div class="form-group">
+                                <label>Grupo:</label>
+                                <input type="text" id="regGrupo" placeholder="Ej. 3°A">
+                            </div>
+                        </div>
+                        <div class="grid-2" style="gap:8px;">
+                            <div class="form-group">
+                                <label>Edad:</label>
+                                <input type="number" id="regEdad" placeholder="Ej. 15">
+                            </div>
+                            <div class="form-group">
+                                <label>Contacto de emergencia:</label>
+                                <input type="text" id="regEmergencia" placeholder="Nombre y teléfono">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Contraseña:</label>
+                            <input type="password" id="regPassAlumno" placeholder="Mínimo 6 caracteres">
+                        </div>
+                        <button class="btn btn-success" onclick="registrarAlumnoSupabase()">Registrar Cuenta</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenedor protegido: oculto hasta que el alumno inicie sesión -->
+            <div id="contenidoEstudianteProtegido" style="display: none;">
+                <div class="grid-2">
+                    <div>
+                        <!-- Chatbot -->
+                        <div class="panel-box">
+                            <h3>Chatbot de Bienestar Emocional</h3>
+                            <div id="chatHistory" class="chat-box">
+                                <div class="msg msg-bot">¡Hola! Soy tu asistente virtual de bienestar. Puedes escribir cómo te sientes o elegir una opción rápida abajo.</div>
+                            </div>
+                            
+                            <div style="font-size: 11px; color: #666; margin-bottom: 4px;">Respuestas rápidas predeterminadas:</div>
+                            <div id="quickRepliesContainer" class="quick-replies"></div>
+
+                            <div class="chat-input-group">
+                                <input type="text" id="userInput" placeholder="Escribe tu mensaje..." onkeypress="if(event.key==='Enter') enviarMensaje()">
+                                <button class="btn" onclick="enviarMensaje()">Enviar</button>
+                            </div>
+                        </div>
+
+                        <!-- Registro de estado de ánimo -->
+                        <div class="panel-box">
+                            <h3>Registro Diario de Estado de Ánimo</h3>
+                            <div class="mood-selector">
+                                <button class="mood-btn" onclick="seleccionarAnimo('🙁 Triste / Mal', this)">🙁</button>
+                                <button class="mood-btn" onclick="seleccionarAnimo('😐 Neutral', this)">😐</button>
+                                <button class="mood-btn" onclick="seleccionarAnimo('🙂 Feliz / Bien', this)">🙂</button>
+                            </div>
+                            <div class="form-group">
+                                <label>Factor asociado:</label>
+                                <select id="factorSelect">
+                                    <option value="Escolar / Académico">Escolar / Académico</option>
+                                    <option value="Personal / Familiar">Personal / Familiar</option>
+                                    <option value="Salud / Cansancio">Salud / Cansancio</option>
+                                </select>
+                            </div>
+                            <button class="btn" style="width: 100%;" onclick="guardarRegistroAnimo()">Registrar Estado de Ánimo</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <!-- Test emocional -->
+                        <div class="panel-box">
+                            <h3>Test de Evaluación Emocional</h3>
+                            <p style="font-size: 12px; color: #666;">Responde el cuestionario institucional para evaluar tu bienestar actual.</p>
+                            
+                            <div id="contenedorPreguntasTest"></div>
+
+                            <button class="btn" style="width: 100%; margin-top: 8px;" onclick="enviarTestAlChat()">Evaluar Test y Obtener Orientación</button>
+                        </div>
+
+                        <!-- Historial -->
+                        <div class="panel-box">
+                            <h3>Historial de Estados de Ánimo</h3>
+                            <div style="max-height: 150px; overflow-y: auto;">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Estado de Ánimo</th>
+                                            <th>Factor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaHistorialEstudiante"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -305,7 +330,6 @@
         <div id="sec-docente" class="role-section">
             <h2>B) Módulo Docente</h2>
             
-            <!-- h) Acceder al sistema mediante sus credenciales -->
             <div id="loginDocente" class="login-box">
                 <h3>Acceso Institucional Docente</h3>
                 <p style="font-size: 12px; color: #666;">Ingresa tus credenciales para consultar el seguimiento emocional autorizado.</p>
@@ -326,7 +350,6 @@
                     <button class="btn btn-sm btn-danger" onclick="cerrarSesion('Docente')">Cerrar Sesión</button>
                 </div>
 
-                <!-- l) Visualizar reportes de seguimiento -->
                 <div class="grid-3">
                     <div class="metric-card">
                         <h4>Estudiantes Autorizados</h4>
@@ -342,7 +365,6 @@
                     </div>
                 </div>
 
-                <!-- i) Consultar información general del seguimiento / j) Consultar registros de estado de ánimo -->
                 <div class="panel-box">
                     <h3>Seguimiento Emocional y Registros de Ánimo (Estudiantes Autorizados)</h3>
                     <table>
@@ -369,7 +391,6 @@
         <div id="sec-tutor" class="role-section">
             <h2>C) Módulo Tutor o Padre de Familia</h2>
 
-            <!-- m) Acceder al sistema mediante sus credenciales -->
             <div id="loginTutor" class="login-box">
                 <h3>Acceso Tutor / Padre de Familia</h3>
                 <p style="font-size: 12px; color: #666;">Ingresa tus credenciales vinculadas al estudiante a tu cargo.</p>
@@ -391,7 +412,6 @@
                 </div>
 
                 <div class="grid-2">
-                    <!-- n) Consultar información general relacionada con el seguimiento emocional del estudiante a su cargo -->
                     <div class="panel-box">
                         <h3>Seguimiento Emocional del Estudiante a Cargo</h3>
                         <p style="font-size: 13px; margin: 6px 0;"><strong>Estudiante Vinculado:</strong> Alumno #001 (Activo)</p>
@@ -401,7 +421,6 @@
                         <p style="font-size: 12px; color: #555;">La plataforma monitorea de forma preventiva el bienestar escolar para brindar acompañamiento oportuno.</p>
                     </div>
 
-                    <!-- o) Consultar los resultados autorizados de las evaluaciones emocionales -->
                     <div class="panel-box">
                         <h3>Resultados Autorizados de Evaluaciones Emocionales</h3>
                         <table>
@@ -426,8 +445,47 @@
         <div id="sec-admin" class="role-section">
             <h2>D) Módulo Administrador</h2>
 
+            <!-- Expediente Minucioso del Alumno en Supabase -->
+            <div class="panel-box" style="border-left: 4px solid var(--success-color); margin-bottom: 20px;">
+                <h3>Expediente Individual y Notas del Tutor (Base de Datos en la Nube)</h3>
+                <div class="form-group">
+                    <label>Selecciona un alumno registrado:</label>
+                    <select id="adminSelectAlumno" onchange="cargarExpedienteAlumno()">
+                        <option value="">-- Selecciona un alumno para ver su expediente --</option>
+                    </select>
+                </div>
+
+                <div id="detalleExpedienteAdmin" style="display: none; background: white; padding: 15px; border: 1px solid var(--border-color); border-radius: 6px; margin-top: 10px;">
+                    <div class="grid-3">
+                        <div><strong>Nombre:</strong> <span id="expNombre"></span></div>
+                        <div><strong>Matrícula:</strong> <span id="expMatricula"></span></div>
+                        <div><strong>Grupo:</strong> <span id="expGrupo"></span></div>
+                        <div><strong>Edad:</strong> <span id="expEdad"></span> años</div>
+                        <div style="grid-column: span 2;"><strong>Contacto de Emergencia:</strong> <span id="expEmergencia"></span></div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label>Notas Confidenciales del Tutor / Orientador:</label>
+                        <textarea id="expNotasTutor" rows="3" placeholder="Escribe observaciones clínicas, acuerdos familiares o seguimiento del tutor..."></textarea>
+                    </div>
+                    <button class="btn btn-success" onclick="guardarNotasTutor()">Guardar Notas del Tutor</button>
+
+                    <h4 style="margin-top: 16px; margin-bottom: 6px;">Historial Emocional y Tests del Alumno</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha y Hora</th>
+                                <th>Tipo</th>
+                                <th>Resultado / Ánimo</th>
+                                <th>Factor / Orientación IA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expTablaHistorial"></tbody>
+                    </table>
+                </div>
+            </div>
+
             <div class="grid-2">
-                <!-- q) Registrar estudiantes y usuarios / r) Modificar / s) Eliminar o desactivar -->
                 <div class="panel-box">
                     <h3>Gestión de Estudiantes y Usuarios Autorizados</h3>
                     <div class="grid-2" style="gap: 10px;">
@@ -460,7 +518,6 @@
                 </div>
 
                 <div>
-                    <!-- t) Administrar los test de evaluación emocional -->
                     <div class="panel-box">
                         <h3>Administrar Test de Evaluación Emocional</h3>
                         <p style="font-size: 12px; color: #666;">Edita las preguntas activas que ven los estudiantes en su módulo:</p>
@@ -479,7 +536,6 @@
                         <button class="btn" onclick="actualizarPreguntasTest()">Actualizar Test Emocional</button>
                     </div>
 
-                    <!-- u) Gestionar las preguntas y respuestas del chatbot -->
                     <div class="panel-box">
                         <h3>Gestionar Respuestas Predeterminadas del Chatbot</h3>
                         <div class="chat-input-group">
@@ -491,7 +547,6 @@
                 </div>
             </div>
 
-            <!-- v) Consultar y administrar los registros almacenados -->
             <div class="panel-box">
                 <h3>Consultar y Administrar Registros Almacenados en el Sistema</h3>
                 <table>
@@ -512,13 +567,6 @@
     </div>
 
     <script>
-        // ==========================================
-        // CONFIGURACIÓN DE API GEMINI (IA REAL)
-        // ==========================================
-        // ⚠️ PEGA AQUÍ TU API KEY REAL DE GOOGLE AI STUDIO
-     
-        let modelosDisponiblesCache = [];
-
         // ==========================================
         // BASE DE DATOS EN MEMORIA DEL PROTOTIPO
         // ==========================================
@@ -571,6 +619,9 @@
             document.querySelectorAll('.role-section').forEach(sec => sec.classList.remove('active'));
             document.getElementById('sec-' + rol).classList.add('active');
             renderizarTodo();
+            if (rol === 'admin') {
+                cargarListaAlumnosAdmin();
+            }
         }
 
         function iniciarSesion(tipo) {
@@ -632,23 +683,26 @@
             elemento.classList.add('selected');
         }
 
-        function guardarRegistroAnimo() {
+        async function guardarRegistroAnimo() {
             if(!estadoAnimoSeleccionado) {
                 alert('Por favor selecciona una carita con tu estado de ánimo.');
                 return;
             }
             const factor = document.getElementById('factorSelect').value;
             const fecha = new Date().toLocaleDateString();
+            const nombreAlumno = alumnoActualSupabase ? alumnoActualSupabase.nombre : "Alumno #001";
 
             registrosGlobales.unshift({
                 id: Date.now(),
                 fecha: fecha,
-                estudiante: "Alumno #001",
+                estudiante: nombreAlumno,
                 tipo: "Estado de Ánimo",
                 detalle: `${estadoAnimoSeleccionado} (${factor})`,
                 animo: estadoAnimoSeleccionado,
                 factor: factor
             });
+
+            await guardarRegistroEnNube('animo', estadoAnimoSeleccionado, factor, null, null);
 
             document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
             estadoAnimoSeleccionado = '';
@@ -658,7 +712,8 @@
 
         function renderizarHistorialEstudiante() {
             const tbody = document.getElementById('tablaHistorialEstudiante');
-            const misRegistros = registrosGlobales.filter(r => r.estudiante === "Alumno #001" && r.tipo === "Estado de Ánimo");
+            const nombreAlumno = alumnoActualSupabase ? alumnoActualSupabase.nombre : "Alumno #001";
+            const misRegistros = registrosGlobales.filter(r => r.estudiante === nombreAlumno && r.tipo === "Estado de Ánimo");
             tbody.innerHTML = misRegistros.map(r => `
                 <tr>
                     <td>${r.fecha}</td>
@@ -668,15 +723,17 @@
             `).join('');
         }
 
-        function enviarTestAlChat() {
+        async function enviarTestAlChat() {
             const p1 = document.getElementById('p1').value;
             const p2 = document.getElementById('p2').value;
             const p3 = document.getElementById('p3').value;
             const fecha = new Date().toLocaleDateString();
+            const nombreAlumno = alumnoActualSupabase ? alumnoActualSupabase.nombre : "Alumno #001";
+            const resumenTest = `Estrés: ${p1} | Descanso: ${p2} | Apoyo: ${p3}`;
 
             evaluacionesAlmacenadas.unshift({
                 fecha: fecha,
-                estudiante: "Alumno #001",
+                estudiante: nombreAlumno,
                 estres: p1,
                 descanso: p2,
                 apoyo: p3
@@ -685,16 +742,17 @@
             registrosGlobales.unshift({
                 id: Date.now(),
                 fecha: fecha,
-                estudiante: "Alumno #001",
+                estudiante: nombreAlumno,
                 tipo: "Test Emocional",
-                detalle: `Estrés: ${p1} | Descanso: ${p2} | Apoyo: ${p3}`
+                detalle: resumenTest
             });
 
             renderizarTodo();
 
             const mensajeTest = `Acabo de realizar mi test de evaluación emocional:\n- Estrés escolar: ${p1}\n- Descanso: ${p2}\n- Apoyo: ${p3}\n\nDame una recomendación breve de bienestar.`;
             document.getElementById('userInput').value = mensajeTest;
-            enviarMensaje();
+            const respuestaIA = await enviarMensaje();
+            await guardarRegistroEnNube('test', null, null, resumenTest, respuestaIA || '');
         }
 
         function renderizarVistaDocente() {
@@ -830,12 +888,12 @@
         }
 
         // ==========================================
-        // CONEXIÓN CON API GEMINI (IA REAL)
+        // CONEXIÓN CON API GEMINI (IA REAL VÍA VERCEL)
         // ==========================================
         async function enviarMensaje() {
             const input = document.getElementById('userInput');
             const text = input.value.trim();
-            if(!text) return;
+            if(!text) return '';
 
             agregarMensaje(text, 'user');
             input.value = '';
@@ -845,8 +903,11 @@
             try {
                 const respuestaIA = await consultarGeminiAutomatico(text);
                 document.getElementById(idCargando).innerText = respuestaIA;
+                return respuestaIA;
             } catch (error) {
-                document.getElementById(idCargando).innerText = "Orientación de bienestar: Es completamente comprensible que te sientas así. Respira hondo y recuerda que tu bienestar es muy importante. ¿Cómo te sientes ahora?";
+                const respaldo = "Orientación de bienestar: Es completamente comprensible que te sientas así. Respira hondo y recuerda que tu bienestar es muy importante. ¿Cómo te sientes ahora?";
+                document.getElementById(idCargando).innerText = respaldo;
+                return respaldo;
             }
         }
 
@@ -863,237 +924,237 @@
         }
 
         async function consultarGeminiAutomatico(mensajeUsuario) {
- const payload = {
-    contents: [{
-      role: "user",
-      parts: [{ text: mensajeUsuario }]
-    }],
-    systemInstruction: {
-      parts: [{
-        text: "Eres un asistente virtual institucional de apoyo y bienestar emocional para estudiantes. Responde de forma empática, cálida, respetuosa y completa en español, cerrando siempre tus ideas sin dejar oraciones inconclusas. No uses asteriscos ni formato Markdown (escribe en texto plano limpio). No diagnostiques trastornos clínicos ni recetes medicamentos; ofrece orientación práctica, escucha activa y técnicas de manejo emocional en 1 o 2 párrafos breves."
-      }]
-    },
-    generationConfig: {
-      temperature: 0.7,
-      maxOutputTokens: 1500
-    }
-  };
+            const payload = {
+                contents: [{
+                    role: "user",
+                    parts: [{ text: mensajeUsuario }]
+                }],
+                systemInstruction: {
+                    parts: [{
+                        text: "Eres un asistente virtual institucional de apoyo y bienestar emocional para estudiantes. Responde de forma empática, cálida, respetuosa y completa en español, cerrando siempre tus ideas sin dejar oraciones inconclusas. No uses asteriscos ni formato Markdown (escribe en texto plano limpio). No diagnostiques trastornos clínicos ni recetes medicamentos; ofrece orientación práctica, escucha activa y técnicas de manejo emocional en 1 o 2 párrafos breves."
+                    }]
+                },
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 1500
+                }
+            };
 
-  const resp = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+            const resp = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
-  const data = await resp.json();
+            const data = await resp.json();
 
-  if (!resp.ok) {
-    throw new Error(data.error || 'Error en el servidor');
-  }
+            if (!resp.ok) {
+                throw new Error(data.error || 'Error en el servidor');
+            }
 
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "Orientación de bienestar: Es completamente comprensible que te sientas así. Respira hondo y recuerda que tu bienestar es muy importante. ¿Cómo te sientes ahora?";
-}
-// ==========================================
-// CONEXIÓN A SUPABASE (CUENTAS Y EXPEDIENTE)
-// ==========================================
-const SUPABASE_URL = 'https://hoaxkgzimawcpduejthh.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_0Bb5MdnIQ9rEcNmdeu_Ngg_UTtojUXC';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || "Orientación de bienestar: Es completamente comprensible que te sientas así. Respira hondo y recuerda que tu bienestar es muy importante. ¿Cómo te sientes ahora?";
+        }
 
-let alumnoActualSupabase = null;
+        // ==========================================
+        // CONEXIÓN A SUPABASE (CUENTAS Y EXPEDIENTE)
+        // ==========================================
+        const SUPABASE_URL = 'https://hoaxkgzimawcpduejthh.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_0Bb5MdnIQ9rEcNmdeu_Ngg_UTtojUXC';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function registrarAlumnoSupabase() {
-  const nombre = document.getElementById('regNombre').value.trim();
-  const matricula = document.getElementById('regMatricula').value.trim();
-  const grupo = document.getElementById('regGrupo').value.trim();
-  const edad = parseInt(document.getElementById('regEdad').value);
-  const contacto_emergencia = document.getElementById('regEmergencia').value.trim();
-  const password = document.getElementById('regPassAlumno').value;
+        let alumnoActualSupabase = null;
 
-  if (!nombre || !matricula || !grupo || !edad || !contacto_emergencia || password.length < 6) {
-    alert('Completa todos los campos y usa una contraseña de al menos 6 caracteres.');
-    return;
-  }
+        async function registrarAlumnoSupabase() {
+            const nombre = document.getElementById('regNombre').value.trim();
+            const matricula = document.getElementById('regMatricula').value.trim();
+            const grupo = document.getElementById('regGrupo').value.trim();
+            const edad = parseInt(document.getElementById('regEdad').value);
+            const contacto_emergencia = document.getElementById('regEmergencia').value.trim();
+            const password = document.getElementById('regPassAlumno').value;
 
-if (matricula.includes('@')) {
-    alert("Ingresa únicamente tu número o clave de matrícula (sin correo electrónico).");
-    return;
-}
-const matriculaLimpia = matricula.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-const emailInstitucional = `${matriculaLimpia}@emotitech.edu.mx`;
-  const { data, error } = await supabaseClient.auth.signUp({ email: emailInstitucional, password });
+            if (!nombre || !matricula || !grupo || !edad || !contacto_emergencia || password.length < 6) {
+                alert('Completa todos los campos y usa una contraseña de al menos 6 caracteres.');
+                return;
+            }
 
-  if (error) {
-    alert('Error al crear cuenta: ' + error.message);
-    return;
-  }
+            if (matricula.includes('@')) {
+                alert("Ingresa únicamente tu número o clave de matrícula (sin correo electrónico).");
+                return;
+            }
+            const matriculaLimpia = matricula.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+            const emailInstitucional = `${matriculaLimpia}@emotitech.edu.mx`;
 
-  if (data.user) {
-    const { error: errPerfil } = await supabaseClient.from('alumnos').insert([{
-      id: data.user.id,
-      nombre,
-      matricula,
-      grupo,
-      edad,
-      contacto_emergencia
-    }]);
+            const { data, error } = await supabaseClient.auth.signUp({ email: emailInstitucional, password });
 
-    if (errPerfil) {
-      alert('Cuenta creada, pero hubo un error al guardar ficha: ' + errPerfil.message);
-      return;
-    }
+            if (error) {
+                alert('Error al crear cuenta: ' + error.message);
+                return;
+            }
 
-    alert('¡Cuenta registrada exitosamente!');
-    verificarSesionAlumno();
-    cargarListaAlumnosAdmin();
-  }
-}
+            if (data.user) {
+                const { error: errPerfil } = await supabaseClient.from('alumnos').insert([{
+                    id: data.user.id,
+                    nombre,
+                    matricula,
+                    grupo,
+                    edad,
+                    contacto_emergencia
+                }]);
 
-async function iniciarSesionAlumnoSupabase() {
-  const matricula = document.getElementById('loginMatricula').value.trim();
-  const password = document.getElementById('loginPassAlumno').value;
+                if (errPerfil) {
+                    alert('Cuenta creada, pero hubo un error al guardar ficha: ' + errPerfil.message);
+                    return;
+                }
 
-  if (!matricula || !password) {
-    alert('Ingresa tu matrícula y contraseña.');
-    return;
-  }
+                alert('¡Cuenta registrada exitosamente!');
+                verificarSesionAlumno();
+                cargarListaAlumnosAdmin();
+            }
+        }
 
-  if (matricula.includes('@')) {
-    alert("Ingresa únicamente tu número o clave de matrícula (sin correo electrónico).");
-    return;
-}
-const matriculaLimpia = matricula.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-const emailInstitucional = `${matriculaLimpia}@emotitech.edu.mx`;
-  const { error } = await supabaseClient.auth.signInWithPassword({ email: emailInstitucional, password });
+        async function iniciarSesionAlumnoSupabase() {
+            const matricula = document.getElementById('loginMatricula').value.trim();
+            const password = document.getElementById('loginPassAlumno').value;
 
-  if (error) {
-    alert('Matrícula o contraseña incorrecta.');
-    return;
-  }
+            if (!matricula || !password) {
+                alert('Ingresa tu matrícula y contraseña.');
+                return;
+            }
 
-  verificarSesionAlumno();
-}
+            if (matricula.includes('@')) {
+                alert("Ingresa únicamente tu número o clave de matrícula (sin correo electrónico).");
+                return;
+            }
+            const matriculaLimpia = matricula.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+            const emailInstitucional = `${matriculaLimpia}@emotitech.edu.mx`;
 
-async function cerrarSesionAlumno() {
-  await supabaseClient.auth.signOut();
-  alumnoActualSupabase = null;
-  document.getElementById('alumnoSesionActiva').style.display = 'none';
-  document.getElementById('formulariosAccesoAlumno').style.display = 'grid';
-  document.getElementById('contenidoEstudianteProtegido').style.display = 'none';
-}
+            const { error } = await supabaseClient.auth.signInWithPassword({ email: emailInstitucional, password });
 
-async function verificarSesionAlumno() {
-  const { data: { user } } = await supabaseClient.auth.getUser();
-  if (!user) {
-    document.getElementById('contenidoEstudianteProtegido').style.display = 'none';
-    return;
-  }
+            if (error) {
+                alert('Matrícula o contraseña incorrecta.');
+                return;
+            }
 
-  const { data: perfil } = await supabaseClient.from('alumnos').select('*').eq('id', user.id).single();
-  if (perfil) {
-    alumnoActualSupabase = perfil;
-    document.getElementById('infoAlumnoConectado').innerText = `${perfil.nombre} (Matrícula: ${perfil.matricula} | Grupo: ${perfil.grupo})`;
-    document.getElementById('alumnoSesionActiva').style.display = 'block';
-    document.getElementById('formulariosAccesoAlumno').style.display = 'none';
-    document.getElementById('contenidoEstudianteProtegido').style.display = 'block';
-  }
-}
+            verificarSesionAlumno();
+        }
 
-// Función auxiliar para guardar ánimo o test en la nube
-async function guardarRegistroEnNube(tipo, estado_animo, factor, puntaje_test, detalle_orientacion) {
-  if (!alumnoActualSupabase) return;
-  await supabaseClient.from('registros_emocionales').insert([{
-    alumno_id: alumnoActualSupabase.id,
-    tipo,
-    estado_animo,
-    factor,
-    puntaje_test,
-    detalle_orientacion
-  }]);
-}
+        async function cerrarSesionAlumno() {
+            await supabaseClient.auth.signOut();
+            alumnoActualSupabase = null;
+            document.getElementById('alumnoSesionActiva').style.display = 'none';
+            document.getElementById('formulariosAccesoAlumno').style.display = 'grid';
+            document.getElementById('contenidoEstudianteProtegido').style.display = 'none';
+        }
 
-// Funciones del Módulo Administrador
-async function cargarListaAlumnosAdmin() {
-  const select = document.getElementById('adminSelectAlumno');
-  if (!select) return;
+        async function verificarSesionAlumno() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) {
+                document.getElementById('contenidoEstudianteProtegido').style.display = 'none';
+                return;
+            }
 
-  const { data: alumnos, error } = await supabaseClient.from('alumnos').select('*').order('nombre');
-  if (error || !alumnos) return;
+            const { data: perfil } = await supabaseClient.from('alumnos').select('*').eq('id', user.id).single();
+            if (perfil) {
+                alumnoActualSupabase = perfil;
+                document.getElementById('infoAlumnoConectado').innerText = `${perfil.nombre} (Matrícula: ${perfil.matricula} | Grupo: ${perfil.grupo})`;
+                document.getElementById('alumnoSesionActiva').style.display = 'block';
+                document.getElementById('formulariosAccesoAlumno').style.display = 'none';
+                document.getElementById('contenidoEstudianteProtegido').style.display = 'block';
+                renderizarHistorialEstudiante();
+            }
+        }
 
-  select.innerHTML = '<option value="">-- Selecciona un alumno para ver su expediente --</option>';
-  alumnos.forEach(al => {
-    const opt = document.createElement('option');
-    opt.value = al.id;
-    opt.textContent = `${al.matricula} - ${al.nombre} (${al.grupo})`;
-    select.appendChild(opt);
-  });
-}
+        async function guardarRegistroEnNube(tipo, estado_animo, factor, puntaje_test, detalle_orientacion) {
+            if (!alumnoActualSupabase) return;
+            await supabaseClient.from('registros_emocionales').insert([{
+                alumno_id: alumnoActualSupabase.id,
+                tipo,
+                estado_animo,
+                factor,
+                puntaje_test,
+                detalle_orientacion
+            }]);
+        }
 
-async function cargarExpedienteAlumno() {
-  const alumnoId = document.getElementById('adminSelectAlumno').value;
-  const panel = document.getElementById('detalleExpedienteAdmin');
-  if (!alumnoId) {
-    panel.style.display = 'none';
-    return;
-  }
+        async function cargarListaAlumnosAdmin() {
+            const select = document.getElementById('adminSelectAlumno');
+            if (!select) return;
 
-  const { data: al } = await supabaseClient.from('alumnos').select('*').eq('id', alumnoId).single();
-  if (!al) return;
+            const { data: alumnos, error } = await supabaseClient.from('alumnos').select('*').order('nombre');
+            if (error || !alumnos) return;
 
-  document.getElementById('expNombre').innerText = al.nombre;
-  document.getElementById('expMatricula').innerText = al.matricula;
-  document.getElementById('expGrupo').innerText = al.grupo;
-  document.getElementById('expEdad').innerText = al.edad;
-  document.getElementById('expEmergencia').innerText = al.contacto_emergencia;
-  document.getElementById('expNotasTutor').value = al.notas_tutor || '';
+            select.innerHTML = '<option value="">-- Selecciona un alumno para ver su expediente --</option>';
+            alumnos.forEach(al => {
+                const opt = document.createElement('option');
+                opt.value = al.id;
+                opt.textContent = `${al.matricula} - ${al.nombre} (${al.grupo})`;
+                select.appendChild(opt);
+            });
+        }
 
-  const { data: historial } = await supabaseClient
-    .from('registros_emocionales')
-    .select('*')
-    .eq('alumno_id', alumnoId)
-    .order('fecha', { ascending: false });
+        async function cargarExpedienteAlumno() {
+            const alumnoId = document.getElementById('adminSelectAlumno').value;
+            const panel = document.getElementById('detalleExpedienteAdmin');
+            if (!alumnoId) {
+                panel.style.display = 'none';
+                return;
+            }
 
-  const tbody = document.getElementById('expTablaHistorial');
-  tbody.innerHTML = '';
+            const { data: al } = await supabaseClient.from('alumnos').select('*').eq('id', alumnoId).single();
+            if (!al) return;
 
-  if (!historial || historial.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Aún no hay registros emocionales o tests de este alumno.</td></tr>';
-  } else {
-    historial.forEach(reg => {
-      const fechaFmt = new Date(reg.fecha).toLocaleString('es-MX');
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${fechaFmt}</td>
-        <td><strong>${reg.tipo === 'test' ? 'Test Emocional' : 'Estado de Ánimo'}</strong></td>
-        <td>${reg.tipo === 'test' ? reg.puntaje_test : reg.estado_animo}</td>
-        <td>${reg.tipo === 'test' ? (reg.detalle_orientacion || '-') : (reg.factor || '-')}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
+            document.getElementById('expNombre').innerText = al.nombre;
+            document.getElementById('expMatricula').innerText = al.matricula;
+            document.getElementById('expGrupo').innerText = al.grupo;
+            document.getElementById('expEdad').innerText = al.edad;
+            document.getElementById('expEmergencia').innerText = al.contacto_emergencia;
+            document.getElementById('expNotasTutor').value = al.notas_tutor || '';
 
-  panel.style.display = 'block';
-}
+            const { data: historial } = await supabaseClient
+                .from('registros_emocionales')
+                .select('*')
+                .eq('alumno_id', alumnoId)
+                .order('fecha', { ascending: false });
 
-async function guardarNotasTutor() {
-  const alumnoId = document.getElementById('adminSelectAlumno').value;
-  const notas = document.getElementById('expNotasTutor').value;
-  if (!alumnoId) return;
+            const tbody = document.getElementById('expTablaHistorial');
+            tbody.innerHTML = '';
 
-  const { error } = await supabaseClient.from('alumnos').update({ notas_tutor: notas }).eq('id', alumnoId);
-  if (error) {
-    alert('Error al guardar notas: ' + error.message);
-  } else {
-    alert('Notas del tutor actualizadas correctamente.');
-  }
-}
+            if (!historial || historial.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Aún no hay registros emocionales o tests de este alumno.</td></tr>';
+            } else {
+                historial.forEach(reg => {
+                    const fechaFmt = new Date(reg.fecha).toLocaleString('es-MX');
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${fechaFmt}</td>
+                        <td><strong>${reg.tipo === 'test' ? 'Test Emocional' : 'Estado de Ánimo'}</strong></td>
+                        <td>${reg.tipo === 'test' ? reg.puntaje_test : reg.estado_animo}</td>
+                        <td>${reg.tipo === 'test' ? (reg.detalle_orientacion || '-') : (reg.factor || '-')}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
 
-// Inicializar sesión y lista al cargar la página
-window.addEventListener('DOMContentLoaded', () => {
-  verificarSesionAlumno();
-  cargarListaAlumnosAdmin();
-});
+            panel.style.display = 'block';
+        }
 
+        async function guardarNotasTutor() {
+            const alumnoId = document.getElementById('adminSelectAlumno').value;
+            const notas = document.getElementById('expNotasTutor').value;
+            if (!alumnoId) return;
+
+            const { error } = await supabaseClient.from('alumnos').update({ notas_tutor: notas }).eq('id', alumnoId);
+            if (error) {
+                alert('Error al guardar notas: ' + error.message);
+            } else {
+                alert('Notas del tutor actualizadas correctamente.');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            verificarSesionAlumno();
+            cargarListaAlumnosAdmin();
+        });
     </script>
 </body>
 </html>
