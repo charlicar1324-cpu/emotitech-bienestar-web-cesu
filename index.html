@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Bienestar Emocional - EmotiTech</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -194,6 +195,37 @@
         <!-- ========================================================= -->
         <div id="sec-estudiante" class="role-section active">
             <h2>A) Módulo Estudiante</h2>
+            <div class="panel-box" id="panelCuentaAlumno" style="margin-bottom: 20px; border-left: 4px solid #2b6cb0;">
+  <h3>Cuenta del Alumno (Registro e Inicio de Sesión)</h3>
+  <div id="alumnoSesionActiva" style="display:none; background:#ebf8ff; padding:12px; border-radius:6px; margin-bottom:10px;">
+    <strong>Alumno conectado:</strong> <span id="infoAlumnoConectado"></span>
+    <button class="btn" style="margin-left:15px; background:#e53e3e;" onclick="cerrarSesionAlumno()">Cerrar Sesión</button>
+  </div>
+
+  <div id="formulariosAccesoAlumno" class="grid-2" style="gap:15px;">
+    <div>
+      <h4>Iniciar Sesión (Alumno Registrado)</h4>
+      <div class="form-group"><label>Matrícula:</label><input type="text" id="loginMatricula" placeholder="Ej. 2026001"></div>
+      <div class="form-group"><label>Contraseña:</label><input type="password" id="loginPassAlumno" placeholder="Mínimo 6 caracteres"></div>
+      <button class="btn" onclick="iniciarSesionAlumnoSupabase()">Entrar a mi Cuenta</button>
+    </div>
+
+    <div>
+      <h4>Crear Cuenta Nueva de Alumno</h4>
+      <div class="form-group"><label>Nombre completo:</label><input type="text" id="regNombre" placeholder="Nombre y apellidos"></div>
+      <div class="grid-2" style="gap:8px;">
+        <div class="form-group"><label>Matrícula:</label><input type="text" id="regMatricula" placeholder="Ej. 2026001"></div>
+        <div class="form-group"><label>Grupo:</label><input type="text" id="regGrupo" placeholder="Ej. 3°A"></div>
+      </div>
+      <div class="grid-2" style="gap:8px;">
+        <div class="form-group"><label>Edad:</label><input type="number" id="regEdad" placeholder="Ej. 15"></div>
+        <div class="form-group"><label>Contacto de emergencia:</label><input type="text" id="regEmergencia" placeholder="Nombre y teléfono"></div>
+      </div>
+      <div class="form-group"><label>Contraseña:</label><input type="password" id="regPassAlumno" placeholder="Mínimo 6 caracteres"></div>
+      <button class="btn btn-success" onclick="registrarAlumnoSupabase()">Registrar Cuenta</button>
+    </div>
+  </div>
+</div>
             <div class="grid-2">
                 <div>
                     <!-- a) Acceder al chatbot / c) Interactuar mediante mensajes o respuestas predeterminadas -->
@@ -860,6 +892,191 @@
 
   return data.candidates?.[0]?.content?.parts?.[0]?.text || "Orientación de bienestar: Es completamente comprensible que te sientas así. Respira hondo y recuerda que tu bienestar es muy importante. ¿Cómo te sientes ahora?";
 }
+// ==========================================
+// CONEXIÓN A SUPABASE (CUENTAS Y EXPEDIENTE)
+// ==========================================
+const SUPABASE_URL = 'https://hoaxkgzimawcpduejthh.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_0Bb5MdnIQ9rEcNmdeu_Ngg_UTtojUXC';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let alumnoActualSupabase = null;
+
+async function registrarAlumnoSupabase() {
+  const nombre = document.getElementById('regNombre').value.trim();
+  const matricula = document.getElementById('regMatricula').value.trim();
+  const grupo = document.getElementById('regGrupo').value.trim();
+  const edad = parseInt(document.getElementById('regEdad').value);
+  const contacto_emergencia = document.getElementById('regEmergencia').value.trim();
+  const password = document.getElementById('regPassAlumno').value;
+
+  if (!nombre || !matricula || !grupo || !edad || !contacto_emergencia || password.length < 6) {
+    alert('Completa todos los campos y usa una contraseña de al menos 6 caracteres.');
+    return;
+  }
+
+  const emailInstitucional = `${matricula.toLowerCase()}@emotitech.edu.mx`;
+  const { data, error } = await supabaseClient.auth.signUp({ email: emailInstitucional, password });
+
+  if (error) {
+    alert('Error al crear cuenta: ' + error.message);
+    return;
+  }
+
+  if (data.user) {
+    const { error: errPerfil } = await supabaseClient.from('alumnos').insert([{
+      id: data.user.id,
+      nombre,
+      matricula,
+      grupo,
+      edad,
+      contacto_emergencia
+    }]);
+
+    if (errPerfil) {
+      alert('Cuenta creada, pero hubo un error al guardar ficha: ' + errPerfil.message);
+      return;
+    }
+
+    alert('¡Cuenta registrada exitosamente!');
+    verificarSesionAlumno();
+    cargarListaAlumnosAdmin();
+  }
+}
+
+async function iniciarSesionAlumnoSupabase() {
+  const matricula = document.getElementById('loginMatricula').value.trim();
+  const password = document.getElementById('loginPassAlumno').value;
+
+  if (!matricula || !password) {
+    alert('Ingresa tu matrícula y contraseña.');
+    return;
+  }
+
+  const emailInstitucional = `${matricula.toLowerCase()}@emotitech.edu.mx`;
+  const { error } = await supabaseClient.auth.signInWithPassword({ email: emailInstitucional, password });
+
+  if (error) {
+    alert('Matrícula o contraseña incorrecta.');
+    return;
+  }
+
+  verificarSesionAlumno();
+}
+
+async function cerrarSesionAlumno() {
+  await supabaseClient.auth.signOut();
+  alumnoActualSupabase = null;
+  document.getElementById('alumnoSesionActiva').style.display = 'none';
+  document.getElementById('formulariosAccesoAlumno').style.display = 'grid';
+}
+
+async function verificarSesionAlumno() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+
+  const { data: perfil } = await supabaseClient.from('alumnos').select('*').eq('id', user.id).single();
+  if (perfil) {
+    alumnoActualSupabase = perfil;
+    document.getElementById('infoAlumnoConectado').innerText = `${perfil.nombre} (Matrícula: ${perfil.matricula} | Grupo: ${perfil.grupo})`;
+    document.getElementById('alumnoSesionActiva').style.display = 'block';
+    document.getElementById('formulariosAccesoAlumno').style.display = 'none';
+  }
+}
+
+// Función auxiliar para guardar ánimo o test en la nube
+async function guardarRegistroEnNube(tipo, estado_animo, factor, puntaje_test, detalle_orientacion) {
+  if (!alumnoActualSupabase) return;
+  await supabaseClient.from('registros_emocionales').insert([{
+    alumno_id: alumnoActualSupabase.id,
+    tipo,
+    estado_animo,
+    factor,
+    puntaje_test,
+    detalle_orientacion
+  }]);
+}
+
+// Funciones del Módulo Administrador
+async function cargarListaAlumnosAdmin() {
+  const select = document.getElementById('adminSelectAlumno');
+  if (!select) return;
+
+  const { data: alumnos, error } = await supabaseClient.from('alumnos').select('*').order('nombre');
+  if (error || !alumnos) return;
+
+  select.innerHTML = '<option value="">-- Selecciona un alumno para ver su expediente --</option>';
+  alumnos.forEach(al => {
+    const opt = document.createElement('option');
+    opt.value = al.id;
+    opt.textContent = `${al.matricula} - ${al.nombre} (${al.grupo})`;
+    select.appendChild(opt);
+  });
+}
+
+async function cargarExpedienteAlumno() {
+  const alumnoId = document.getElementById('adminSelectAlumno').value;
+  const panel = document.getElementById('detalleExpedienteAdmin');
+  if (!alumnoId) {
+    panel.style.display = 'none';
+    return;
+  }
+
+  const { data: al } = await supabaseClient.from('alumnos').select('*').eq('id', alumnoId).single();
+  if (!al) return;
+
+  document.getElementById('expNombre').innerText = al.nombre;
+  document.getElementById('expMatricula').innerText = al.matricula;
+  document.getElementById('expGrupo').innerText = al.grupo;
+  document.getElementById('expEdad').innerText = al.edad;
+  document.getElementById('expEmergencia').innerText = al.contacto_emergencia;
+  document.getElementById('expNotasTutor').value = al.notas_tutor || '';
+
+  const { data: historial } = await supabaseClient
+    .from('registros_emocionales')
+    .select('*')
+    .eq('alumno_id', alumnoId)
+    .order('fecha', { ascending: false });
+
+  const tbody = document.getElementById('expTablaHistorial');
+  tbody.innerHTML = '';
+
+  if (!historial || historial.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Aún no hay registros emocionales o tests de este alumno.</td></tr>';
+  } else {
+    historial.forEach(reg => {
+      const fechaFmt = new Date(reg.fecha).toLocaleString('es-MX');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${fechaFmt}</td>
+        <td><strong>${reg.tipo === 'test' ? 'Test Emocional' : 'Estado de Ánimo'}</strong></td>
+        <td>${reg.tipo === 'test' ? reg.puntaje_test : reg.estado_animo}</td>
+        <td>${reg.tipo === 'test' ? (reg.detalle_orientacion || '-') : (reg.factor || '-')}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  panel.style.display = 'block';
+}
+
+async function guardarNotasTutor() {
+  const alumnoId = document.getElementById('adminSelectAlumno').value;
+  const notas = document.getElementById('expNotasTutor').value;
+  if (!alumnoId) return;
+
+  const { error } = await supabaseClient.from('alumnos').update({ notas_tutor: notas }).eq('id', alumnoId);
+  if (error) {
+    alert('Error al guardar notas: ' + error.message);
+  } else {
+    alert('Notas del tutor actualizadas correctamente.');
+  }
+}
+
+// Inicializar sesión y lista al cargar la página
+window.addEventListener('DOMContentLoaded', () => {
+  verificarSesionAlumno();
+  cargarListaAlumnosAdmin();
+});
 
     </script>
 </body>
